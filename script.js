@@ -159,4 +159,202 @@
   } else {
     initScrollReveal();
   }
+
+  function initChatbot() {
+    var root = document.getElementById("faq-bot");
+    if (!root) {
+      return;
+    }
+
+    var lang = root.getAttribute("data-lang") === "en" ? "en" : "fi";
+    var toggleBtn = document.getElementById("chatbot-toggle");
+    var closeBtn = document.getElementById("chatbot-close");
+    var panel = document.getElementById("chatbot-panel");
+    var messages = document.getElementById("chatbot-messages");
+    var form = document.getElementById("chatbot-form");
+    var input = document.getElementById("chatbot-input");
+    var quick = document.getElementById("chatbot-quick");
+
+    if (!toggleBtn || !panel || !messages || !form || !input) {
+      return;
+    }
+
+    var content = {
+      fi: {
+        welcome:
+          "Moikka! Voin auttaa yleisissä kysymyksissä (hinta, aikataulu, ylläpito, päivitykset).",
+        unknown:
+          "En osannut vastata tähän varmasti.\nVoit kysyä meiltä suoraan:\n✉ hello@sivux.fi\n☎ +358 41 4967337",
+        rules: [
+          {
+            keys: ["hinta", "maks", "paljon", "euro", "paketti"],
+            answer:
+              "Meillä hinnat alkavat noin 449 EUR + alv. Lopullinen hinta riippuu sivujen määrästä, sisällöstä ja mahdollisista integraatioista.",
+          },
+          {
+            keys: ["kesto", "kauan", "aikataulu", "viikko", "milloin"],
+            answer:
+              "Tyypillinen projekti kestää noin 1-3 viikkoa. Aikaan vaikuttavat laajuus sekä se, kuinka nopeasti tekstit ja kuvat saadaan käyttöön.",
+          },
+          {
+            keys: ["paivitta", "sisalto", "itse", "cms", "muuttaa"],
+            answer:
+              "Kyllä, sivun sisältöä voidaan päivittää helposti myös ilman koodiosaamista. Tarvittaessa hoidamme päivitykset myös puolestasi.",
+          },
+          {
+            keys: ["yllapito", "tuki", "bugi", "virhe", "turva"],
+            answer:
+              "Tarjoamme ylläpitoa, tietoturvapäivityksiä, varmuuskopioita ja teknistä tukea. Ylläpidon laajuus sovitaan tarpeesi mukaan.",
+          },
+          {
+            keys: ["kieli", "english", "englanti", "fi", "en"],
+            answer:
+              "Sivusto voidaan toteuttaa usealla kielellä, kuten suomeksi ja englanniksi. Kieliversioiden määrä vaikuttaa laajuuteen ja hintaan.",
+          },
+        ],
+      },
+      en: {
+        welcome:
+          "Hi! I can help with common questions (pricing, timeline, maintenance, content updates).",
+        unknown:
+          "I am not fully sure about this one.\nPlease contact us directly:\n✉ hello@sivux.fi\n☎ +358 41 4967337",
+        rules: [
+          {
+            keys: ["price", "pricing", "cost", "package", "euro"],
+            answer:
+              "Our projects typically start from around 449 EUR + VAT. Final pricing depends on page count, content scope, and integrations.",
+          },
+          {
+            keys: ["timeline", "how long", "duration", "weeks", "time"],
+            answer:
+              "A typical project takes about 1-3 weeks. Timing depends on project scope and how quickly content is available.",
+          },
+          {
+            keys: ["update", "content", "cms", "myself", "edit"],
+            answer:
+              "Yes, we can build the site so content is easy to update without coding. We can also handle updates for you if needed.",
+          },
+          {
+            keys: ["maintenance", "support", "bug", "security", "backup"],
+            answer:
+              "We offer maintenance, security updates, backups, and technical support. The plan can be tailored to your needs.",
+          },
+          {
+            keys: ["language", "finnish", "english", "fi", "en"],
+            answer:
+              "We can build multilingual websites, for example in Finnish and English. Scope and pricing depend on the number of language versions.",
+          },
+        ],
+      },
+    };
+
+    var dict = content[lang];
+    var isOpen = false;
+
+    function normalize(text) {
+      return String(text || "")
+        .toLowerCase()
+        .replace(/[äå]/g, "a")
+        .replace(/ö/g, "o")
+        .replace(/[^\w\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function addMessage(role, text) {
+      var item = document.createElement("p");
+      item.className = "chatbot-message " + role;
+      item.textContent = text;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function getAnswer(question) {
+      var q = normalize(question);
+      for (var i = 0; i < dict.rules.length; i++) {
+        var keys = dict.rules[i].keys;
+        for (var j = 0; j < keys.length; j++) {
+          if (q.indexOf(normalize(keys[j])) !== -1) {
+            return dict.rules[i].answer;
+          }
+        }
+      }
+      return dict.unknown;
+    }
+
+    function openChat() {
+      if (isOpen) {
+        return;
+      }
+      isOpen = true;
+      panel.hidden = false;
+      toggleBtn.setAttribute("aria-expanded", "true");
+      input.focus();
+    }
+
+    function closeChat() {
+      if (!isOpen) {
+        return;
+      }
+      isOpen = false;
+      panel.hidden = true;
+      toggleBtn.setAttribute("aria-expanded", "false");
+      toggleBtn.focus();
+    }
+
+    toggleBtn.addEventListener("click", function () {
+      if (isOpen) {
+        closeChat();
+      } else {
+        openChat();
+      }
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeChat);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var value = input.value.trim();
+      if (!value) {
+        return;
+      }
+      addMessage("user", value);
+      input.value = "";
+      window.setTimeout(function () {
+        addMessage("bot", getAnswer(value));
+      }, 180);
+    });
+
+    if (quick) {
+      quick.querySelectorAll("button[data-question]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var q = btn.getAttribute("data-question");
+          if (!q) {
+            return;
+          }
+          openChat();
+          addMessage("user", q);
+          window.setTimeout(function () {
+            addMessage("bot", getAnswer(q));
+          }, 180);
+        });
+      });
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && isOpen) {
+        closeChat();
+      }
+    });
+
+    addMessage("bot", dict.welcome);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initChatbot);
+  } else {
+    initChatbot();
+  }
 })();

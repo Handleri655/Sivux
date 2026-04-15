@@ -345,6 +345,7 @@
         <h3 class="footer-heading">Yhteystiedot</h3>
         <ul class="footer-links">
           <li><a href="mailto:hello@sivux.fi">hello@sivux.fi</a></li>
+          <li><a href="tel:+358414967337">+358 41 4967337</a></li>
           <li>Suomi</li>
         </ul>
       </div>
@@ -361,6 +362,41 @@
   <a href="#top" class="to-top" id="to-top" aria-label="Takaisin sivun alkuun">
     <span class="to-top-icon" aria-hidden="true">↑</span>
   </a>
+
+  <section class="chatbot" id="faq-bot" data-lang="fi" aria-label="Chatbot">
+    <button
+      type="button"
+      class="chatbot-toggle"
+      id="chatbot-toggle"
+      aria-expanded="false"
+      aria-controls="chatbot-panel"
+    >
+      <span aria-hidden="true">💬</span>
+      Kysy meiltä
+    </button>
+    <div class="chatbot-panel" id="chatbot-panel" hidden>
+      <header class="chatbot-header">
+        <div>
+          <p class="chatbot-title">Sivux Chat</p>
+          <p class="chatbot-subtitle">Kysy yleisistä asioista</p>
+        </div>
+        <button type="button" class="chatbot-close" id="chatbot-close" aria-label="Sulje chat">×</button>
+      </header>
+      <div class="chatbot-messages" id="chatbot-messages" aria-live="polite"></div>
+      <div class="chatbot-quick" id="chatbot-quick">
+        <button type="button" data-question="Mitä verkkosivut maksavat?">Hinnat</button>
+        <button type="button" data-question="Kauanko projekti kestää?">Aikataulu</button>
+        <button type="button" data-question="Voinko päivittää sivua itse?">Sisältöpäivitys</button>
+      </div>
+      <form class="chatbot-form" id="chatbot-form">
+        <label for="chatbot-input" class="chatbot-label">Kirjoita kysymys</label>
+        <div class="chatbot-input-row">
+          <input id="chatbot-input" name="question" type="text" placeholder="Esim. paljonko projekti maksaa?" required />
+          <button type="submit">Lähetä</button>
+        </div>
+      </form>
+    </div>
+  </section>
 
   <script src="script.js"></script>
 </body>

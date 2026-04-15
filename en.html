@@ -345,6 +345,7 @@
         <h3 class="footer-heading">Contact</h3>
         <ul class="footer-links">
           <li><a href="mailto:hello@sivux.fi">hello@sivux.fi</a></li>
+          <li><a href="tel:+358414967337">+358 41 4967337</a></li>
           <li>Finland</li>
         </ul>
       </div>
@@ -361,6 +362,41 @@
   <a href="#top" class="to-top" id="to-top" aria-label="Back to top">
     <span class="to-top-icon" aria-hidden="true">↑</span>
   </a>
+
+  <section class="chatbot" id="faq-bot" data-lang="en" aria-label="Chatbot">
+    <button
+      type="button"
+      class="chatbot-toggle"
+      id="chatbot-toggle"
+      aria-expanded="false"
+      aria-controls="chatbot-panel"
+    >
+      <span aria-hidden="true">💬</span>
+      Ask us
+    </button>
+    <div class="chatbot-panel" id="chatbot-panel" hidden>
+      <header class="chatbot-header">
+        <div>
+          <p class="chatbot-title">Sivux Chat</p>
+          <p class="chatbot-subtitle">Ask common questions</p>
+        </div>
+        <button type="button" class="chatbot-close" id="chatbot-close" aria-label="Close chat">×</button>
+      </header>
+      <div class="chatbot-messages" id="chatbot-messages" aria-live="polite"></div>
+      <div class="chatbot-quick" id="chatbot-quick">
+        <button type="button" data-question="What does a website project cost?">Pricing</button>
+        <button type="button" data-question="How long does a project take?">Timeline</button>
+        <button type="button" data-question="Can I update the website myself?">Content updates</button>
+      </div>
+      <form class="chatbot-form" id="chatbot-form">
+        <label for="chatbot-input" class="chatbot-label">Type your question</label>
+        <div class="chatbot-input-row">
+          <input id="chatbot-input" name="question" type="text" placeholder="E.g. how much does a project cost?" required />
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
+  </section>
 
   <script src="script.js"></script>
 </body>
