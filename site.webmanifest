@@ -1,0 +1,24 @@
+{
+  "name": "Sivux",
+  "short_name": "Sivux",
+  "description": "Nettisivut ja verkkosivut yrityksille.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "theme_color": "#1a1814",
+  "background_color": "#f4f1eb",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

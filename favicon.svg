@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Sivux">
+  <rect width="180" height="180" rx="36" fill="#f4f1eb"/>
+  <text
+    x="50%"
+    y="52%"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    font-family="Outfit, 'Segoe UI', system-ui, sans-serif"
+    font-size="52"
+    font-weight="700"
+    letter-spacing="-0.04em"
+    fill="#1a1814"
+  >Sivux<tspan fill="#c45c26">.</tspan></text>
+</svg>
