@@ -188,7 +188,7 @@
         welcome:
           "Moikka! Voin auttaa yleisissä kysymyksissä (hinta, aikataulu, ylläpito, päivitykset).",
         unknown:
-          "En osannut vastata tähän varmasti.\nVoit kysyä meiltä suoraan:\n✉ hello@sivux.fi\n☎ +358 41 4967337",
+          "En osannut vastata tähän varmasti.\nVoit kysyä meiltä suoraan:\n✉ info@sivux.fi\n☎ +358 41 4967337",
         rules: [
           {
             keys: ["hinta", "maks", "paljon", "euro", "paketti"],
@@ -221,7 +221,7 @@
         welcome:
           "Hi! I can help with common questions (pricing, timeline, maintenance, content updates).",
         unknown:
-          "I am not fully sure about this one.\nPlease contact us directly:\n✉ hello@sivux.fi\n☎ +358 41 4967337",
+          "I am not fully sure about this one.\nPlease contact us directly:\n✉ info@sivux.fi\n☎ +358 41 4967337",
         rules: [
           {
             keys: ["price", "pricing", "cost", "package", "euro"],
