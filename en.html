@@ -116,7 +116,7 @@
       font-size: clamp(1.8rem, 4vw, 2.4rem);
     }
     .site-lock p { margin: 0; color: #5c574d; }
-    .site-lock + * { display: none !important; }
+    .site-lock ~ * { display: none !important; }
   </style>
   <section class="site-lock" aria-live="polite" lang="en">
     <div class="site-lock-card">
@@ -614,3 +614,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
