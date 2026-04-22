@@ -7,7 +7,7 @@
     name="description"
     content="Sivux builds business websites in Finland: professional web design, fast delivery, and clear pricing. Websites for companies from startups to growing teams."
   />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
   <meta name="theme-color" content="#1a1814" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
@@ -91,6 +91,41 @@
   <script>document.documentElement.classList.add("js-reveal");</script>
 </head>
 <body>
+  <style>
+    .site-lock {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 2rem;
+      background: radial-gradient(ellipse at top, rgba(196, 92, 38, 0.12), transparent 55%), #f4f1eb;
+      color: #1a1814;
+      font-family: "Instrument Sans", system-ui, sans-serif;
+    }
+    .site-lock-card {
+      max-width: 560px;
+      background: #fff;
+      border: 1px solid rgba(26, 24, 20, 0.12);
+      border-radius: 16px;
+      padding: 2rem 1.4rem;
+      box-shadow: 0 20px 50px rgba(26, 24, 20, 0.12);
+    }
+    .site-lock h1 {
+      margin: 0 0 0.6rem;
+      font-family: "Outfit", system-ui, sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+    }
+    .site-lock p { margin: 0; color: #5c574d; }
+    .site-lock + * { display: none !important; }
+  </style>
+  <section class="site-lock" aria-live="polite" lang="en">
+    <div class="site-lock-card">
+      <p class="logo" style="margin-bottom:0.7rem;">Sivux<span class="logo-dot">.</span></p>
+      <h1>Website under construction</h1>
+      <p>We are currently building the Sivux website. The page will be live soon.</p>
+      <p style="margin-top:0.8rem;"><strong>Please check back soon</strong></p>
+    </div>
+  </section>
   <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="site-header" id="top">
@@ -107,7 +142,6 @@
           <li><a href="#work" class="nav-link" data-nav-section="work">Client results</a></li>
           <li><a href="#process" class="nav-link" data-nav-section="process">Process</a></li>
           <li><a href="#pricing" class="nav-link" data-nav-section="pricing">Pricing</a></li>
-          <li><a href="#about" class="nav-link" data-nav-section="about">About</a></li>
           <li><a href="#faq" class="nav-link" data-nav-section="faq">FAQ</a></li>
           <li><a href="#contact" class="nav-cta" data-nav-section="contact">Contact us</a></li>
         </ul>
@@ -319,29 +353,6 @@
       </div>
     </section>
 
-    <section class="section section-alt" id="about">
-      <div class="container about">
-        <div class="about-visual" data-reveal>
-          <div class="about-blob"></div>
-          <img src="founder-julius.svg" alt="Julius, founder of Sivux" class="about-photo" />
-        </div>
-        <div class="about-copy" data-reveal data-reveal-delay="0.12">
-          <p class="eyebrow">About</p>
-          <h2>Who is behind Sivux?</h2>
-          <p>
-            Hi, I am Julius - founder of Sivux and your primary delivery partner. I build conversion-focused
-            websites for small and growing businesses in Finland.
-          </p>
-          <p>
-            You work directly with the person doing the work from discovery to launch and support.
-            No middle layers, no unclear ownership.
-          </p>
-          <p><strong>Julius, Founder</strong><br />Sivux / business websites</p>
-          <a href="mailto:info@sivux.fi" class="link-arrow">info@sivux.fi</a>
-        </div>
-      </div>
-    </section>
-
     <section class="section" id="pricing">
       <div class="container">
         <header class="section-head" data-reveal>
@@ -468,8 +479,8 @@
           <details class="faq-item" role="listitem">
             <summary>Who works on the project?</summary>
             <p>
-              Depending on scope, Sivux works as a focused solo partner or a small team.
-              One responsible contact keeps the project consistent from start to finish.
+              Julius, founder of Sivux, handles the work directly. You work with the same
+              person from discovery through launch and ongoing updates.
             </p>
           </details>
         </div>
@@ -536,7 +547,6 @@
           <li><a href="#services">Services</a></li>
           <li><a href="#work">Work</a></li>
           <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact us</a></li>
           <li><a href="#process">Process</a></li>
         </ul>
