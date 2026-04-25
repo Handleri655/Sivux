@@ -91,6 +91,13 @@
     initScrollUi();
   }
 
+  if (toTop) {
+    toTop.addEventListener("click", function (event) {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
   function initScrollReveal() {
     var root = document.documentElement;
     if (!root.classList.contains("js-reveal")) {
@@ -152,6 +159,71 @@
         }
       });
     }
+  }
+
+  function initHeroInteractiveMotion() {
+    var hero = document.querySelector(".hero");
+    if (!hero) {
+      return;
+    }
+
+    var reduceMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      return;
+    }
+
+    var rafId = null;
+    var targetX = 0;
+    var targetY = 0;
+    var currentX = 0;
+    var currentY = 0;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function render() {
+      currentX += (targetX - currentX) * 0.09;
+      currentY += (targetY - currentY) * 0.09;
+
+      hero.style.setProperty("--mx", currentX.toFixed(3));
+      hero.style.setProperty("--my", currentY.toFixed(3));
+
+      if (Math.abs(targetX - currentX) > 0.001 || Math.abs(targetY - currentY) > 0.001) {
+        rafId = window.requestAnimationFrame(render);
+      } else {
+        rafId = null;
+      }
+    }
+
+    function queueRender() {
+      if (!rafId) {
+        rafId = window.requestAnimationFrame(render);
+      }
+    }
+
+    hero.addEventListener("mousemove", function (event) {
+      var rect = hero.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        return;
+      }
+
+      var relativeX = (event.clientX - rect.left) / rect.width;
+      var relativeY = (event.clientY - rect.top) / rect.height;
+
+      targetX = clamp(relativeX * 2 - 1, -1, 1);
+      targetY = clamp(relativeY * 2 - 1, -1, 1);
+      queueRender();
+    });
+
+    hero.addEventListener("mouseleave", function () {
+      targetX = 0;
+      targetY = 0;
+      queueRender();
+    });
   }
 
   if (document.readyState === "loading") {
@@ -412,72 +484,81 @@
     addMessage("bot", dict.welcome);
   }
 
-  function initPriceEstimator() {
-    var forms = document.querySelectorAll(".estimator-form");
+  function initFormValidation() {
+    var forms = document.querySelectorAll(".contact-form");
     if (!forms.length) {
       return;
     }
 
     forms.forEach(function (form) {
-      var pagesInput = form.querySelector("input[name='pages']");
-      var languagesSelect = form.querySelector("select[name='languages']");
-      var featureInputs = form.querySelectorAll("input[name='features']");
-      var pagesOut = form.querySelector("[data-est-pages]");
-      var result =
-        form.id === "estimator-en"
-          ? document.getElementById("estimator-result-en")
-          : document.getElementById("estimator-result-fi");
-      var isEn = form.id === "estimator-en";
-
-      if (!pagesInput || !languagesSelect || !result) {
+      var fields = form.querySelectorAll("input[type='text'], input[type='email'], input[type='tel'], textarea");
+      if (!fields.length) {
         return;
       }
 
-      function formatMoney(value) {
-        if (isEn) {
-          return value.toLocaleString("en-US") + " EUR";
+      var status = document.createElement("p");
+      status.className = "form-status";
+      status.setAttribute("aria-live", "polite");
+      status.hidden = true;
+      form.appendChild(status);
+
+      function markFieldState(field) {
+        var value = String(field.value || "").trim();
+        var required = field.hasAttribute("required");
+        var isValid = field.checkValidity();
+
+        field.classList.remove("is-valid", "is-invalid");
+
+        if (!value && !required) {
+          return;
         }
-        return value.toLocaleString("fi-FI") + " EUR";
+
+        if (isValid) {
+          field.classList.add("is-valid");
+        } else {
+          field.classList.add("is-invalid");
+        }
       }
 
-      function updateEstimate() {
-        var pages = Number(pagesInput.value || 1);
-        var languages = Number(languagesSelect.value || 1);
-        var base = 390 + pages * 170;
-        var languageCost = (languages - 1) * 220;
-        var featureCost = 0;
-
-        featureInputs.forEach(function (input) {
-          if (!input.checked) {
-            return;
+      fields.forEach(function (field) {
+        field.addEventListener("blur", function () {
+          markFieldState(field);
+        });
+        field.addEventListener("input", function () {
+          if (field.classList.contains("is-invalid")) {
+            markFieldState(field);
           }
-          if (input.value === "analytics") {
-            featureCost += 140;
-          } else if (input.value === "integrations") {
-            featureCost += 360;
-          } else if (input.value === "seo") {
-            featureCost += 280;
+        });
+      });
+
+      form.addEventListener("submit", function (event) {
+        var hasInvalid = false;
+
+        fields.forEach(function (field) {
+          markFieldState(field);
+          if (!field.checkValidity()) {
+            hasInvalid = true;
           }
         });
 
-        var low = Math.round(base + languageCost + featureCost);
-        var high = Math.round(low * 1.28);
-
-        if (pagesOut) {
-          pagesOut.textContent = String(pages);
+        if (hasInvalid) {
+          event.preventDefault();
+          status.hidden = false;
+          status.className = "form-status is-error";
+          status.textContent =
+            form.closest("[data-lang='en']") || document.documentElement.lang === "en"
+              ? "Please check highlighted fields before sending."
+              : "Tarkista korostetut kentät ennen lähettämistä.";
+          return;
         }
 
-        result.innerHTML = isEn
-          ? "Estimate: <strong>around " + formatMoney(low) + " - " + formatMoney(high) + " + VAT</strong>"
-          : "Arvio: <strong>noin " + formatMoney(low) + " - " + formatMoney(high) + " + alv</strong>";
-      }
-
-      pagesInput.addEventListener("input", updateEstimate);
-      languagesSelect.addEventListener("change", updateEstimate);
-      featureInputs.forEach(function (input) {
-        input.addEventListener("change", updateEstimate);
+        status.hidden = false;
+        status.className = "form-status is-success";
+        status.textContent =
+          form.closest("[data-lang='en']") || document.documentElement.lang === "en"
+            ? "Looks good. Sending your message..."
+            : "Näyttää hyvältä. Lähetetään viestiä...";
       });
-      updateEstimate();
     });
   }
 
@@ -488,8 +569,14 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initPriceEstimator);
+    document.addEventListener("DOMContentLoaded", initFormValidation);
   } else {
-    initPriceEstimator();
+    initFormValidation();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHeroInteractiveMotion);
+  } else {
+    initHeroInteractiveMotion();
   }
 })();

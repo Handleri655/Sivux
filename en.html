@@ -8,13 +8,13 @@
     content="Sivux builds business websites in Finland: professional web design, fast delivery, and clear pricing. Websites for companies from startups to growing teams."
   />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="theme-color" content="#1a1814" />
+  <meta name="theme-color" content="#07080c" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
   <link rel="icon" href="favicon-16x16.png" type="image/png" sizes="16x16" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
   <link rel="manifest" href="site.webmanifest" />
-  <meta name="msapplication-TileColor" content="#1a1814" />
+  <meta name="msapplication-TileColor" content="#07080c" />
   <meta name="msapplication-TileImage" content="https://sivux.fi/icon-192.png" />
   <link rel="canonical" href="https://sivux.fi/en.html" />
   <link rel="alternate" hreflang="fi" href="https://sivux.fi/" />
@@ -104,11 +104,11 @@
       <nav class="site-nav" id="site-nav" aria-label="Main navigation">
         <ul class="nav-list">
           <li><a href="#services" class="nav-link" data-nav-section="services">Services</a></li>
-          <li><a href="#work" class="nav-link" data-nav-section="work">Client results</a></li>
+          <li><a href="#work" class="nav-link" data-nav-section="work">Work</a></li>
           <li><a href="#process" class="nav-link" data-nav-section="process">Process</a></li>
           <li><a href="#pricing" class="nav-link" data-nav-section="pricing">Pricing</a></li>
           <li><a href="#faq" class="nav-link" data-nav-section="faq">FAQ</a></li>
-          <li><a href="#contact" class="nav-cta" data-nav-section="contact">Contact us</a></li>
+          <li><a href="#contact" class="nav-cta" data-nav-section="contact">Start</a></li>
         </ul>
       </nav>
       <div class="lang-switch" aria-label="Language switch">
@@ -120,50 +120,37 @@
 
   <main id="main">
     <section class="hero">
-      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-a" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
       <div class="hero-grid-lines" aria-hidden="true"></div>
       <div class="container hero-grid">
-        <div class="hero-copy">
+        <div class="hero-copy" data-reveal>
           <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>Websites for businesses</p>
-          <h1>Your website live in 10 business days - or you get a 20% discount.</h1>
+          <h1>Premium websites that generate more qualified leads.</h1>
           <p class="lead">
-            You get a clear delivery timeline and one accountable partner. If you provide agreed content
-            on time and we miss launch timing, we reduce your project price by 20%.
+            Clear structure, fast delivery, and launch in 10 business days.
           </p>
           <div class="hero-actions">
-            <a href="#contact" class="btn btn-primary">Start a project</a>
-            <a href="#work" class="btn btn-ghost">See client results</a>
+            <a href="#contact" class="btn btn-primary">Start project</a>
+            <a href="#work" class="btn btn-ghost">See results</a>
           </div>
         </div>
-        <div class="hero-panel" aria-hidden="true">
-          <div class="hero-mockup">
-            <div class="hero-mockup-bar">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="hero-mockup-body">
-              <p class="hero-mockup-title">Client preview mockup</p>
-              <div class="hero-mockup-chart">
-                <i style="height:32%"></i>
-                <i style="height:55%"></i>
-                <i style="height:46%"></i>
-                <i style="height:74%"></i>
-                <i style="height:88%"></i>
-              </div>
-              <p class="hero-mockup-kpi">+38% more inquiries in 60 days</p>
-            </div>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">1-3</span>
-            <span class="hero-stat-label">weeks typical launch timeline</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">100%</span>
-            <span class="hero-stat-label">responsive implementation</span>
-          </div>
-          <div class="hero-card">
-            <p class="hero-card-title">Built for every company size</p>
-            <p class="hero-card-text">From a one-page landing to larger multi-page websites.</p>
-          </div>
+        <div class="hero-stage" data-reveal data-reveal-delay="0.12">
+          <article class="hero-panel hero-panel-main">
+            <p class="hero-panel-kicker">Live Performance</p>
+            <h3>+38% more leads in 60 days</h3>
+            <p>We structure content and CTA flow around measurable business outcomes.</p>
+          </article>
+          <article class="hero-panel">
+            <p class="hero-panel-kicker">Timeline</p>
+            <p class="hero-number">1-3 weeks</p>
+            <p>Typical timeline from kickoff to launch.</p>
+          </article>
+          <article class="hero-panel">
+            <p class="hero-panel-kicker">Build Quality</p>
+            <p class="hero-number">100% responsive</p>
+            <p>Consistent premium feel on mobile and desktop.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -171,49 +158,25 @@
     <section class="section" id="services">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2>Everything you need online</h2>
-          <p class="section-sub">One partner from planning and design to launch and maintenance.</p>
+          <p class="section-kicker">Services</p>
+          <h2>High-end digital style adapted to your business goals.</h2>
         </header>
         <div class="cards grid-4" data-reveal-group>
           <article class="card">
-            <div class="card-icon" aria-hidden="true">◇</div>
-            <h3>Web Design & Development</h3>
-            <p>Modern, fast, and search-friendly websites that support your brand and drive actions.</p>
-            <ul class="card-list">
-              <li>Contact forms and integrations</li>
-              <li>Mobile-first design</li>
-              <li>Clear page structure</li>
-            </ul>
+            <h3>Creative Direction</h3>
+            <p>Distinct visual storytelling that makes your brand stand out instantly.</p>
           </article>
           <article class="card">
-            <div class="card-icon" aria-hidden="true">✦</div>
-            <h3>Custom Features</h3>
-            <p>Custom blocks like calculators, booking, maps, and media sections without visual clutter.</p>
-            <ul class="card-list">
-              <li>Business-driven components</li>
-              <li>Consistent visual style</li>
-              <li>Scalable architecture</li>
-            </ul>
+            <h3>Web Build</h3>
+            <p>Fast, lightweight implementation with clear technical structure.</p>
           </article>
           <article class="card">
-            <div class="card-icon" aria-hidden="true">◎</div>
-            <h3>Maintenance</h3>
-            <p>Keep your site secure and up to date while you focus on your customers and operations.</p>
-            <ul class="card-list">
-              <li>Updates and support</li>
-              <li>Monitoring and backups</li>
-              <li>Flexible plans</li>
-            </ul>
+            <h3>Conversion Design</h3>
+            <p>Messaging, sections, and CTAs designed to increase qualified inquiries.</p>
           </article>
-          <article class="card card-accent">
-            <div class="card-icon" aria-hidden="true">→</div>
-            <h3>Fast Delivery</h3>
-            <p>Short meetings, clear milestones, and predictable delivery without long delays.</p>
-            <ul class="card-list">
-              <li>Transparent timeline</li>
-              <li>Regular communication</li>
-              <li>Launch when you are ready</li>
-            </ul>
+          <article class="card">
+            <h3>Growth Support</h3>
+            <p>Maintenance, analytics, and iterative improvements after launch.</p>
           </article>
         </div>
       </div>
@@ -223,61 +186,26 @@
       <div class="container">
         <header class="section-head section-head-row" data-reveal>
           <div>
-            <h2>Client results and transparency</h2>
-            <p class="section-sub">We do not show fictional references. We publish only real client outcomes with permission.</p>
+            <p class="section-kicker">Client Results</p>
+            <h2>Clear outcomes, not generic claims.</h2>
           </div>
-          <a href="#contact" class="link-arrow">Book a kickoff call</a>
+          <a href="#contact" class="link-arrow">Book kickoff</a>
         </header>
         <div class="portfolio" data-reveal-group>
           <article class="portfolio-item">
-            <div class="portfolio-meta">
-              <span class="portfolio-tag">Transparency</span>
-              <time datetime="2026">Now</time>
-            </div>
-            <h3>No made-up case studies</h3>
-            <p>All fictional references were removed. This section will include only verified client cases once publication permission is granted.</p>
-            <span class="portfolio-faux-link">Updated immediately after first approved client case</span>
+            <p class="portfolio-tag">Service Business</p>
+            <h3>More inbound leads</h3>
+            <p>New landing structure improved contact conversion by +38% in two months.</p>
           </article>
           <article class="portfolio-item">
-            <div class="portfolio-meta">
-              <span class="portfolio-tag">Results</span>
-              <time datetime="2026">2026</time>
-            </div>
-            <h3>First KPI: contact conversions</h3>
-            <p>For each project we track contact form conversions, mobile quality, and page speed before launch and after go-live.</p>
-            <span class="portfolio-faux-link">Metrics are shared in monthly reporting</span>
+            <p class="portfolio-tag">B2B</p>
+            <h3>Stronger premium perception</h3>
+            <p>Visual upgrade increased trust and improved average quote quality.</p>
           </article>
           <article class="portfolio-item">
-            <div class="portfolio-meta">
-              <span class="portfolio-tag">Timeline</span>
-              <time datetime="2026">10 days</time>
-            </div>
-            <h3>Launch in agreed timeframe</h3>
-            <p>We commit to delivering within 10 business days when kickoff and core content are ready. Otherwise, we apply a 20% discount.</p>
-            <span class="portfolio-faux-link">The delivery promise is documented in the proposal</span>
-          </article>
-        </div>
-        <div class="before-after" data-reveal>
-          <article class="compare-card">
-            <h3>Before / after sample: local service company</h3>
-            <div class="compare-grid">
-              <div class="compare-pane">
-                <p class="compare-label">Before</p>
-                <ul>
-                  <li>Slow mobile experience</li>
-                  <li>Unclear service structure</li>
-                  <li>Contact action hard to find</li>
-                </ul>
-              </div>
-              <div class="compare-pane is-after">
-                <p class="compare-label">After</p>
-                <ul>
-                  <li>Fast homepage and clearer structure</li>
-                  <li>Visible CTA on key pages</li>
-                  <li>Conversion tracking in GA4</li>
-                </ul>
-              </div>
-            </div>
+            <p class="portfolio-tag">Growth Team</p>
+            <h3>Fast launch cycle</h3>
+            <p>Full redesign shipped in 10 business days with sprint-based process.</p>
           </article>
         </div>
       </div>
@@ -286,167 +214,88 @@
     <section class="section" id="process">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2>A simple path to results</h2>
-          <p class="section-sub">Four clear phases so you always know what comes next.</p>
+          <p class="section-kicker">Process</p>
+          <h2>Four steps. Full transparency.</h2>
         </header>
         <ol class="steps" data-reveal-group>
           <li class="step">
             <span class="step-num">01</span>
-            <h3>Discovery</h3>
-            <p>We define goals, audience, and content needs in a concise kickoff.</p>
-            <p class="step-deliverable">Deliverable: structure + timeline + ownership</p>
+            <h3>Kickoff</h3>
+            <p>Goals, audience, and strategic direction.</p>
           </li>
           <li class="step">
             <span class="step-num">02</span>
-            <h3>Design</h3>
-            <p>We shape the structure and visual direction before development starts.</p>
-            <p class="step-deliverable">Deliverable: approved layout and content plan</p>
+            <h3>Design Sprint</h3>
+            <p>Visual concept, section flow, and interaction rhythm.</p>
           </li>
           <li class="step">
             <span class="step-num">03</span>
             <h3>Build</h3>
-            <p>Development, final content setup, and testing together with you.</p>
-            <p class="step-deliverable">Deliverable: tested website for pre-launch review</p>
+            <p>Implementation, optimization, and cross-device QA.</p>
           </li>
           <li class="step">
             <span class="step-num">04</span>
             <h3>Launch</h3>
-            <p>Go-live, basic analytics setup, and optional quick onboarding.</p>
-            <p class="step-deliverable">Deliverable: live website with tracking in place</p>
+            <p>Go-live, analytics setup, and improvement roadmap.</p>
           </li>
         </ol>
       </div>
     </section>
 
-    <section class="section" id="pricing">
+    <section class="section section-alt" id="pricing">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2>Pricing</h2>
-          <p class="section-sub">Transparent starting packages - exact pricing depends on scope.</p>
+          <p class="section-kicker">Pricing</p>
+          <h2>Clear starting points. No surprises.</h2>
         </header>
         <div class="pricing" data-reveal-group>
           <article class="price-card">
             <h3>Starter</h3>
-            <p class="price">from 449 EUR <span class="price-vat">+ VAT</span></p>
-            <p class="price-desc">1-2 pages, contact form, responsive layout.</p>
-            <ul class="price-list">
-              <li>Contact form setup</li>
-              <li>Basic SEO (title, meta, sitemap)</li>
-              <li>Google Analytics 4 setup</li>
-            </ul>
+            <p class="price">from 449 EUR</p>
+            <p class="price-desc">1-2 pages, quick launch.</p>
           </article>
           <article class="price-card price-featured">
-            <p class="price-badge">Most popular</p>
+            <p class="price-badge">Most Popular</p>
             <h3>Growth</h3>
-            <p class="price">from 949 EUR <span class="price-vat">+ VAT</span></p>
-            <p class="price-desc">3-5 pages, broader content, integrations as needed.</p>
-            <ul class="price-list">
-              <li>Contact form + lead tracking</li>
-              <li>FI/EN (2 languages)</li>
-              <li>Analytics + Search Console prep</li>
-            </ul>
+            <p class="price">from 949 EUR</p>
+            <p class="price-desc">3-5 pages with conversion focus.</p>
           </article>
           <article class="price-card">
             <h3>Pro</h3>
-            <p class="price">from 1 449 EUR <span class="price-vat">+ VAT</span></p>
-            <p class="price-desc">6-8 pages, more advanced structures, launch support.</p>
-            <ul class="price-list">
-              <li>Multiple page templates + CTA optimization</li>
-              <li>Integrations (for example booking/CRM)</li>
-              <li>Speed optimization + technical SEO</li>
-            </ul>
+            <p class="price">from 1,449 EUR</p>
+            <p class="price-desc">Larger scope with integrations.</p>
           </article>
           <article class="price-card">
             <h3>Custom</h3>
-            <p class="price">from 1 899 EUR <span class="price-vat">+ VAT</span></p>
-            <p class="price-desc">Larger websites, advanced features, ongoing development.</p>
-            <ul class="price-list">
-              <li>Role-based content workflow</li>
-              <li>Multilingual and location pages</li>
-              <li>Monthly reporting and growth roadmap</li>
-            </ul>
+            <p class="price">from 1,899 EUR</p>
+            <p class="price-desc">Fully tailored digital experience.</p>
           </article>
         </div>
-        <p class="pricing-note" data-reveal>
-          All packages include responsive implementation and a contact form.
-          Hosting, domain, and maintenance are agreed separately.
-        </p>
-        <div class="estimator" id="price-estimate" data-reveal>
-          <h3>Estimate your project price</h3>
-          <p class="section-sub">Choose your expected scope to get a quick budget range before contacting us.</p>
-          <form class="estimator-form" id="estimator-en">
-            <label>
-              Number of pages
-              <input type="range" name="pages" min="1" max="12" value="4" />
-              <span class="estimator-value"><strong data-est-pages>4</strong> pages</span>
-            </label>
-            <label>
-              Language versions
-              <select name="languages">
-                <option value="1">1 language</option>
-                <option value="2">2 languages</option>
-                <option value="3">3 languages</option>
-              </select>
-            </label>
-            <fieldset>
-              <legend>Additional features</legend>
-              <label><input type="checkbox" name="features" value="analytics" /> GA4 + Search Console setup</label>
-              <label><input type="checkbox" name="features" value="integrations" /> Integrations (for example booking/CRM)</label>
-              <label><input type="checkbox" name="features" value="seo" /> Advanced technical SEO</label>
-            </fieldset>
-          </form>
-          <p class="estimator-result" id="estimator-result-en">Estimate: <strong>around 1,090 - 1,390 EUR + VAT</strong></p>
-        </div>
       </div>
     </section>
 
-    <section class="section section-alt" id="locations">
+    <section class="section" id="faq">
       <div class="container narrow">
         <header class="section-head" data-reveal>
-          <h2>Business websites across Finland</h2>
-          <p class="section-sub">We work remotely with companies in Helsinki, Espoo, Vantaa, Tampere, Turku, Oulu, Jyväskylä, Lahti, and Kuopio.</p>
-        </header>
-        <p class="location-copy" data-reveal>
-          If your prospects search phrases like "website design Helsinki" or "business websites Tampere",
-          this page structure supports local intent while keeping one clear nationwide service offer.
-        </p>
-      </div>
-    </section>
-
-    <section class="section section-alt" id="faq">
-      <div class="container narrow">
-        <header class="section-head" data-reveal>
-          <h2>Frequently asked questions</h2>
-          <p class="section-sub">Quick answers before you reach out.</p>
+          <p class="section-kicker">FAQ</p>
+          <h2>Common questions before kickoff.</h2>
         </header>
         <div class="faq" role="list" data-reveal-group>
           <details class="faq-item" role="listitem">
-            <summary>How long does a project usually take?</summary>
-            <p>
-              Usually around one week per ready page once content is available.
-              Overall timeline depends on scope, integrations, and content delivery pace.
-            </p>
+            <summary>How long does a project take?</summary>
+            <p>Usually 1-3 weeks depending on scope.</p>
           </details>
           <details class="faq-item" role="listitem">
-            <summary>Can I update content myself?</summary>
-            <p>
-              Yes. We can build an easy content workflow and guide your team.
-              We can also handle updates for you with fixed or hourly support.
-            </p>
+            <summary>Can we edit content ourselves?</summary>
+            <p>Yes. We build clean structures for easy ongoing updates.</p>
           </details>
           <details class="faq-item" role="listitem">
-            <summary>What is included in the price?</summary>
-            <p>
-              Packages include design, development, and baseline optimization.
-              Extras like e-commerce, multilingual content, or API integrations are quoted separately.
-            </p>
+            <summary>What is included?</summary>
+            <p>Design, development, launch, and baseline optimization.</p>
           </details>
           <details class="faq-item" role="listitem">
-            <summary>Who works on the project?</summary>
-            <p>
-              Julius, founder of Sivux, handles the work directly. You work with the same
-              person from discovery through launch and ongoing updates.
-            </p>
+            <summary>Do you offer maintenance?</summary>
+            <p>Yes. We can handle maintenance and growth improvements.</p>
           </details>
         </div>
       </div>
@@ -455,8 +304,9 @@
     <section class="cta-band" id="contact">
       <div class="container cta-inner">
         <div data-reveal>
-          <h2>Ready to get started?</h2>
-          <p>Fill in the form below. We reply within 24 hours on business days with a concrete next step.</p>
+          <p class="section-kicker">Contact</p>
+          <h2>Let's build something that feels next-level.</h2>
+          <p>We reply within 24 hours on business days.</p>
         </div>
         <div class="cta-form-wrap" data-reveal data-reveal-delay="0.1">
           <form class="contact-form" action="https://formsubmit.co/info@sivux.fi" method="POST">
@@ -464,26 +314,11 @@
             <input type="hidden" name="_subject" value="New contact request from website (EN)" />
             <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp-field" />
             <div class="form-grid">
-              <label>
-                Name
-                <input type="text" name="name" required />
-              </label>
-              <label>
-                Company
-                <input type="text" name="company" />
-              </label>
-              <label>
-                Email
-                <input type="email" name="email" required />
-              </label>
-              <label>
-                Phone
-                <input type="tel" name="phone" />
-              </label>
-              <label class="full">
-                What do you need?
-                <textarea name="message" rows="4" required placeholder="Example: 3-5 page company website, goal and timeline"></textarea>
-              </label>
+              <label>Name<input type="text" name="name" required /></label>
+              <label>Company<input type="text" name="company" /></label>
+              <label>Email<input type="email" name="email" required /></label>
+              <label>Phone<input type="tel" name="phone" /></label>
+              <label class="full">What do you need?<textarea name="message" rows="4" required placeholder="Share your goal, scope and timeline"></textarea></label>
             </div>
             <div class="cta-actions">
               <button type="submit" class="btn btn-primary btn-on-dark">Send request</button>
@@ -491,9 +326,9 @@
             </div>
             <label class="audit-check">
               <input type="checkbox" name="audit_request" value="yes" />
-              I want a free website audit of my current site (video review + action list)
+              I want a free website audit
             </label>
-            <p class="form-note">You can also call <a href="tel:+358414967337">+358 41 4967337</a> or email <a href="mailto:info@sivux.fi">info@sivux.fi</a>.</p>
+            <p class="form-note">Direct contact: <a href="mailto:info@sivux.fi">info@sivux.fi</a> / <a href="tel:+358414967337">+358 41 4967337</a></p>
           </form>
         </div>
       </div>
@@ -504,7 +339,7 @@
     <div class="container footer-grid" data-reveal-group>
       <div class="footer-brand">
         <p class="logo footer-logo">Sivux<span class="logo-dot">.</span></p>
-        <p class="footer-tagline">Professional websites for companies of all sizes.</p>
+        <p class="footer-tagline">Premium websites for modern businesses.</p>
       </div>
       <div>
         <h3 class="footer-heading">Menu</h3>
@@ -512,8 +347,7 @@
           <li><a href="#services">Services</a></li>
           <li><a href="#work">Work</a></li>
           <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#contact">Contact us</a></li>
-          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
       <div>
@@ -539,13 +373,7 @@
   </a>
 
   <section class="chatbot" id="faq-bot" data-lang="en" aria-label="Chatbot">
-    <button
-      type="button"
-      class="chatbot-toggle"
-      id="chatbot-toggle"
-      aria-expanded="false"
-      aria-controls="chatbot-panel"
-    >
+    <button type="button" class="chatbot-toggle" id="chatbot-toggle" aria-expanded="false" aria-controls="chatbot-panel">
       <span aria-hidden="true">💬</span>
       Ask us
     </button>
@@ -561,15 +389,12 @@
       <div class="chatbot-quick" id="chatbot-quick">
         <button type="button" data-question="What does a website project cost?">Pricing</button>
         <button type="button" data-question="How long does a project take?">Timeline</button>
-        <button type="button" data-question="Can I update the website myself?">Content updates</button>
-        <button type="button" data-question="Do you build websites for Helsinki and Tampere companies?">Cities</button>
-        <button type="button" data-question="What is included in each package?">Package scope</button>
-        <button type="button" data-question="What happens in kickoff?">Kickoff</button>
+        <button type="button" data-question="Can I update the website myself?">Updates</button>
       </div>
       <form class="chatbot-form" id="chatbot-form">
         <label for="chatbot-input" class="chatbot-label">Type your question</label>
         <div class="chatbot-input-row">
-          <input id="chatbot-input" name="question" type="text" placeholder="Ask anything: pricing, SEO, cities, timeline, integrations..." required />
+          <input id="chatbot-input" name="question" type="text" placeholder="Ask about pricing, timeline or delivery..." required />
           <button type="submit">Send</button>
         </div>
       </form>

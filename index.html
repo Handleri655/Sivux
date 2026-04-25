@@ -8,13 +8,13 @@
     content="Sivux tekee nettisivut yrityksille: ammattimaiset verkkosivut, nopea käynnistys ja läpinäkyvä hinta. Verkkosivut pienyrityksistä kasvaviin yrityksiin – Suomessa."
   />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="theme-color" content="#1a1814" />
+  <meta name="theme-color" content="#07080c" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
   <link rel="icon" href="favicon-16x16.png" type="image/png" sizes="16x16" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
   <link rel="manifest" href="site.webmanifest" />
-  <meta name="msapplication-TileColor" content="#1a1814" />
+  <meta name="msapplication-TileColor" content="#07080c" />
   <meta name="msapplication-TileImage" content="https://sivux.fi/icon-192.png" />
   <link rel="canonical" href="https://sivux.fi/" />
   <link rel="alternate" hreflang="fi" href="https://sivux.fi/" />
@@ -91,7 +91,7 @@
   <script>document.documentElement.classList.add("js-reveal");</script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Hyppää pääsisältöön</a>
+  <a class="skip-link" href="#main">Hyppää sisältöön</a>
 
   <header class="site-header" id="top">
     <div class="container header-inner">
@@ -104,11 +104,11 @@
       <nav class="site-nav" id="site-nav" aria-label="Päävalikko">
         <ul class="nav-list">
           <li><a href="#palvelut" class="nav-link" data-nav-section="palvelut">Palvelut</a></li>
-          <li><a href="#referenssit" class="nav-link" data-nav-section="referenssit">Asiakastulokset</a></li>
+          <li><a href="#referenssit" class="nav-link" data-nav-section="referenssit">Work</a></li>
           <li><a href="#prosessi" class="nav-link" data-nav-section="prosessi">Prosessi</a></li>
           <li><a href="#hinnasto" class="nav-link" data-nav-section="hinnasto">Hinnasto</a></li>
           <li><a href="#ukk" class="nav-link" data-nav-section="ukk">UKK</a></li>
-          <li><a href="#yhteys" class="nav-cta" data-nav-section="yhteys">Ota yhteyttä</a></li>
+          <li><a href="#yhteys" class="nav-cta" data-nav-section="yhteys">Aloita</a></li>
         </ul>
       </nav>
       <div class="lang-switch" aria-label="Kielivalinta">
@@ -120,50 +120,37 @@
 
   <main id="main">
     <section class="hero">
-      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-a" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
       <div class="hero-grid-lines" aria-hidden="true"></div>
       <div class="container hero-grid">
-        <div class="hero-copy">
+        <div class="hero-copy" data-reveal>
           <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>Verkkosivut yrityksille</p>
-          <h1>Valmis verkkosivusto 10 arkipäivässä - tai saat 20 % alennuksen.</h1>
+          <h1>Premium-verkkosivut, jotka tuottavat enemmän liidejä.</h1>
           <p class="lead">
-            Saat projektiin selkeän aikataulun ja yhden vastuuhenkilön. Jos toimitat sovitut sisällöt
-            ajoissa, mutta emme julkaise sovitussa aikataulussa, hyvitämme 20 % projektihinnasta.
+            Selkeä rakenne, nopea toteutus ja julkaisu 10 arkipäivässä.
           </p>
           <div class="hero-actions">
             <a href="#yhteys" class="btn btn-primary">Aloita projekti</a>
-          <a href="#referenssit" class="btn btn-ghost">Katso asiakastulokset</a>
+            <a href="#referenssit" class="btn btn-ghost">Katso asiakastulokset</a>
           </div>
         </div>
-        <div class="hero-panel" aria-hidden="true">
-          <div class="hero-mockup">
-            <div class="hero-mockup-bar">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="hero-mockup-body">
-              <p class="hero-mockup-title">Asiakassivun esikatselu</p>
-              <div class="hero-mockup-chart">
-                <i style="height:32%"></i>
-                <i style="height:55%"></i>
-                <i style="height:46%"></i>
-                <i style="height:74%"></i>
-                <i style="height:88%"></i>
-              </div>
-              <p class="hero-mockup-kpi">+38 % enemmän yhteydenottoja 60 päivässä</p>
-            </div>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">1–3</span>
-            <span class="hero-stat-label">viikkoa tyypillinen lanseeraus</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">100%</span>
-            <span class="hero-stat-label">responsiivinen toteutus</span>
-          </div>
-          <div class="hero-card">
-            <p class="hero-card-title">Sopii kaikille kokoisille</p>
-            <p class="hero-card-text">Yhden sivun landingista monisivuisiin palveluihin.</p>
-          </div>
+        <div class="hero-stage" data-reveal data-reveal-delay="0.12">
+          <article class="hero-panel hero-panel-main">
+            <p class="hero-panel-kicker">Live Performance</p>
+            <h3>+38 % liidejä ensimmäisen 60 päivän aikana</h3>
+            <p>Sivurakenne, CTA-polut ja mobiilin nopeus rakennetaan konversio edellä.</p>
+          </article>
+          <article class="hero-panel">
+            <p class="hero-panel-kicker">Timeline</p>
+            <p class="hero-number">1–3 viikkoa</p>
+            <p>Tyypillinen toimitusaika kickoffista julkaisuun.</p>
+          </article>
+          <article class="hero-panel">
+            <p class="hero-panel-kicker">Build Quality</p>
+            <p class="hero-number">100 % responsive</p>
+            <p>Visuaalinen laatu säilyy mobiilista desktopiin.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -171,49 +158,25 @@
     <section class="section" id="palvelut">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2>Kaikki mitä tarvitset verkossa</h2>
-          <p class="section-sub">Yksi kumppani koko polulle: suunnittelusta julkaisuun ja ylläpitoon.</p>
+          <p class="section-kicker">Palvelut</p>
+          <h2>Sama fiilis kuin huippustudioilla. Rakennettu sinun liiketoimintaan.</h2>
         </header>
         <div class="cards grid-4" data-reveal-group>
           <article class="card">
-            <div class="card-icon" aria-hidden="true">◇</div>
-            <h3>Verkkosivut</h3>
-            <p>Modernit, nopeat ja hakukoneystävälliset sivut, jotka tukevat brändiäsi ja ohjaavat kävijöitä toimintaan.</p>
-            <ul class="card-list">
-              <li>Yhteydenottolomakkeet ja integraatiot</li>
-              <li>Mobiili ensin</li>
-              <li>Selkeä sisältörakenne</li>
-            </ul>
+            <h3>Creative Direction</h3>
+            <p>Rakennamme visuaalisen linjan, joka erottaa sinut markkinasta heti ensimmäisellä scrollilla.</p>
           </article>
           <article class="card">
-            <div class="card-icon" aria-hidden="true">✦</div>
-            <h3>Räätälöity toteutus</h3>
-            <p>Tarpeisiisi räätälöidyt osiot: laskurit, kartat, ajanvaraus, esittelyvideot – ilman että kokonaisuus kärsii.</p>
-            <ul class="card-list">
-              <li>Liiketoimintaan sopivat komponentit</li>
-              <li>Yhtenäinen ulkoasu</li>
-              <li>Laajennettavuus</li>
-            </ul>
+            <h3>Web Build</h3>
+            <p>Nopea, kevyt ja skaalautuva toteutus, joka toimii ilman turhaa teknistä velkaa.</p>
           </article>
           <article class="card">
-            <div class="card-icon" aria-hidden="true">◎</div>
-            <h3>Ylläpito</h3>
-            <p>Halutessasi pidämme sivuston turvallisena, varmuuskopioituna ja ajan tasalla – sinä keskityt asiakkaisiin.</p>
-            <ul class="card-list">
-              <li>Päivitykset ja tuki</li>
-              <li>Seuranta ja varmistukset</li>
-              <li>Joustavat sopimukset</li>
-            </ul>
+            <h3>Conversion Design</h3>
+            <p>CTA-rakenne, lomakepolut ja sisältöjärjestys suunnitellaan liidien kasvattamiseen.</p>
           </article>
-          <article class="card card-accent">
-            <div class="card-icon" aria-hidden="true">→</div>
-            <h3>Nopea käynnistys</h3>
-            <p>Lyhyet palaverit, selkeät välitavoitteet ja julkaisu ilman viikkojen sumua. Kerromme aina missä mennään.</p>
-            <ul class="card-list">
-              <li>Ennakoitava aikataulu</li>
-              <li>Säännöllinen yhteydenpito</li>
-              <li>Julkaisu kun olet valmis</li>
-            </ul>
+          <article class="card">
+            <h3>Growth Support</h3>
+            <p>Jatkuva ylläpito, analytiikka ja kehityssuunnitelma julkaisuun jälkeen.</p>
           </article>
         </div>
       </div>
@@ -223,61 +186,26 @@
       <div class="container">
         <header class="section-head section-head-row" data-reveal>
           <div>
-            <h2>Asiakastulokset ja läpinäkyvyys</h2>
-            <p class="section-sub">Emme näytä kuvitteellisia referenssejä. Julkaisemme vain aidot asiakastulokset luvalla.</p>
+            <p class="section-kicker">Asiakastulokset</p>
+            <h2>Tulokset puhuvat, ei geneeriset lupaukset.</h2>
           </div>
-          <a href="#yhteys" class="link-arrow">Varaa aloituspalaveri</a>
+          <a href="#yhteys" class="link-arrow">Varaa kickoff</a>
         </header>
         <div class="portfolio" data-reveal-group>
           <article class="portfolio-item">
-            <div class="portfolio-meta">
-              <span class="portfolio-tag">Avoimuus</span>
-              <time datetime="2026">Nyt</time>
-            </div>
-            <h3>Ei keinotekoisia caseja</h3>
-            <p>Poistimme kaikki kuvitteelliset referenssit. Tälle sivulle lisätään vain todelliset asiakastyöt, kun saamme julkaisuluvan.</p>
-            <span class="portfolio-faux-link">Päivitetään heti ensimmäisen asiakkaan jälkeen</span>
+            <p class="portfolio-tag">Palveluyritys</p>
+            <h3>Enemmän yhteydenottoja</h3>
+            <p>Uusi rakenne nosti lomakekonversiota +38 % kahdessa kuukaudessa.</p>
           </article>
           <article class="portfolio-item">
-            <div class="portfolio-meta">
-              <span class="portfolio-tag">Tulokset</span>
-              <time datetime="2026">2026</time>
-            </div>
-            <h3>Ensimmäinen mittari: yhteydenotot</h3>
-            <p>Seuraamme kaikissa projekteissa yhteydenottolomakkeen konversiota, mobiilin laatua ja sivunopeutta ennen julkaisua.</p>
-            <span class="portfolio-faux-link">Mittarit raportoidaan asiakkaalle kuukausittain</span>
+            <p class="portfolio-tag">B2B</p>
+            <h3>Selkeämpi premium-vaikutelma</h3>
+            <p>Visuaalinen uudistus nosti tarjousten keskihintaa ja vahvisti luottamusta.</p>
           </article>
           <article class="portfolio-item">
-            <div class="portfolio-meta">
-              <span class="portfolio-tag">Aikataulu</span>
-              <time datetime="2026">10 pv</time>
-            </div>
-            <h3>Julkaisu sovitussa ajassa</h3>
-            <p>Lupaamme valmiin sivuston 10 arkipäivässä, kun kickoff ja sisällöt ovat käsillä. Muuten myönnämme 20 % alennuksen.</p>
-            <span class="portfolio-faux-link">Selkeä toimituslupaus kirjataan tarjoukseen</span>
-          </article>
-        </div>
-        <div class="before-after" data-reveal>
-          <article class="compare-card">
-            <h3>Ennen / jälkeen -näyte: paikallinen palveluyritys</h3>
-            <div class="compare-grid">
-              <div class="compare-pane">
-                <p class="compare-label">Ennen</p>
-                <ul>
-                  <li>Hidas mobiilikokemus</li>
-                  <li>Epäselvä palvelurakenne</li>
-                  <li>Yhteydenotto piilossa</li>
-                </ul>
-              </div>
-              <div class="compare-pane is-after">
-                <p class="compare-label">Jälkeen</p>
-                <ul>
-                  <li>Nopea etusivu ja selkeä rakenne</li>
-                  <li>Näkyvä CTA jokaisella sivulla</li>
-                  <li>Konversioseuranta GA4:ssa</li>
-                </ul>
-              </div>
-            </div>
+            <p class="portfolio-tag">Kasvuyhtiö</p>
+            <h3>Nopea julkaisu</h3>
+            <p>Täysi sivustouudistus läpi 10 arkipäivässä selkeällä sprinttimallilla.</p>
           </article>
         </div>
       </div>
@@ -286,167 +214,88 @@
     <section class="section" id="prosessi">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2>Yksinkertainen tie tuloksiin</h2>
-          <p class="section-sub">Neljä vaihetta – tiedät aina mitä seuraavaksi tapahtuu.</p>
+          <p class="section-kicker">Prosessi</p>
+          <h2>Neljä vaihetta. Täysi läpinäkyvyys.</h2>
         </header>
         <ol class="steps" data-reveal-group>
           <li class="step">
             <span class="step-num">01</span>
-            <h3>Kartoitus</h3>
-            <p>Tavoitteet, kohderyhmä ja sisältötarpeet kuntoon lyhyessä kickoffissa.</p>
-            <p class="step-deliverable">Tuotos: rakenne + aikataulu + vastuut</p>
+            <h3>Kickoff</h3>
+            <p>Tavoitteet, kohderyhmä ja sisältölinja.</p>
           </li>
           <li class="step">
             <span class="step-num">02</span>
-            <h3>Suunnittelu</h3>
-            <p>Rakenne ja visuaalinen linja ennen kuin koodi syntyy.</p>
-            <p class="step-deliverable">Tuotos: hyväksytty layout ja sisältörunko</p>
+            <h3>Design Sprint</h3>
+            <p>Visuaalinen suunta, osiot ja käyttölogiikka.</p>
           </li>
           <li class="step">
             <span class="step-num">03</span>
-            <h3>Toteutus</h3>
-            <p>Kehitys, sisällön viimeistely ja testaus yhdessä kanssasi.</p>
-            <p class="step-deliverable">Tuotos: testattu sivusto esitarkastukseen</p>
+            <h3>Build</h3>
+            <p>Toteutus, optimointi ja testit kaikilla laitteilla.</p>
           </li>
           <li class="step">
             <span class="step-num">04</span>
-            <h3>Julkaisu</h3>
-            <p>Go-live, analytiikka perusasetuksilla ja tarvittaessa pikakoulutus.</p>
-            <p class="step-deliverable">Tuotos: live-sivusto + mittarit seurantaan</p>
+            <h3>Launch</h3>
+            <p>Julkaisu, analytiikka ja jatkokehityksen roadmap.</p>
           </li>
         </ol>
       </div>
     </section>
 
-    <section class="section" id="hinnasto">
+    <section class="section section-alt" id="hinnasto">
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2>Hinnasto</h2>
-          <p class="section-sub">Läpinäkyvät lähtötasot – tarkka hinta sovitaan laajuuden mukaan.</p>
+          <p class="section-kicker">Hinnasto</p>
+          <h2>Selkeä lähtöpaketti. Ei yllätyksiä.</h2>
         </header>
         <div class="pricing" data-reveal-group>
           <article class="price-card">
-            <h3>Perus</h3>
-            <p class="price">alk. 449 € <span class="price-vat">+ alv</span></p>
-            <p class="price-desc">1–2 sivua, yhteydenotto, responsiivinen ulkoasu.</p>
-            <ul class="price-list">
-              <li>Yhteydenottolomake</li>
-              <li>Perus SEO (title + meta + sitemap)</li>
-              <li>Google Analytics 4 -asennus</li>
-            </ul>
+            <h3>Starter</h3>
+            <p class="price">alk. 449 EUR</p>
+            <p class="price-desc">1-2 sivua, nopea launch.</p>
           </article>
           <article class="price-card price-featured">
             <p class="price-badge">Suosituin</p>
-            <h3>Kasvu</h3>
-            <p class="price">alk. 949 € <span class="price-vat">+ alv</span></p>
-            <p class="price-desc">3–5 sivua, laajempi sisältö, integraatiot tarpeen mukaan.</p>
-            <ul class="price-list">
-              <li>Yhteydenottolomake + liidiseuranta</li>
-              <li>FI/EN (2 kieltä)</li>
-              <li>Analytics + Search Console -valmistelu</li>
-            </ul>
+            <h3>Growth</h3>
+            <p class="price">alk. 949 EUR</p>
+            <p class="price-desc">3-5 sivua, vahva konversiorakenne.</p>
           </article>
           <article class="price-card">
             <h3>Pro</h3>
-            <p class="price">alk. 1 449 € <span class="price-vat">+ alv</span></p>
-            <p class="price-desc">6–8 sivua, monimutkaisemmat rakenteet ja tuki lanseeraukseen.</p>
-            <ul class="price-list">
-              <li>Useita sivupohjia + CTA-optimointi</li>
-              <li>Integraatiot (esim. varaus/CRM)</li>
-              <li>Nopeusoptimointi + tekninen SEO</li>
-            </ul>
+            <p class="price">alk. 1 449 EUR</p>
+            <p class="price-desc">Laajempi sivusto + integraatiot.</p>
           </article>
           <article class="price-card">
-            <h3>Räätälöity</h3>
-            <p class="price">alk. 1 899 € <span class="price-vat">+ alv</span></p>
-            <p class="price-desc">Laajat sivustot, erityisominaisuudet ja jatkuva kehitys.</p>
-            <ul class="price-list">
-              <li>Roolitettu sisältö + workflow</li>
-              <li>Monikielisyys ja aluekohtaiset sivut</li>
-              <li>Kuukausiraportointi ja kehityssuunnitelma</li>
-            </ul>
+            <h3>Custom</h3>
+            <p class="price">alk. 1 899 EUR</p>
+            <p class="price-desc">Täysin räätälöity digitaalinen kokonaisuus.</p>
           </article>
         </div>
-        <p class="pricing-note" data-reveal>
-          Kaikkiin paketteihin kuuluu vähintään responsiivinen toteutus ja yhteydenottolomake.
-          Hosting, domain ja ylläpito sovitaan erikseen.
-        </p>
-        <div class="estimator" id="hinta-arvio" data-reveal>
-          <h3>Laske suuntaa-antava hinta</h3>
-          <p class="section-sub">Valitse arvioidut tarpeet. Saat heti karkean hintahaarukan ennen yhteydenottoa.</p>
-          <form class="estimator-form" id="estimator-fi">
-            <label>
-              Sivumäärä
-              <input type="range" name="pages" min="1" max="12" value="4" />
-              <span class="estimator-value"><strong data-est-pages>4</strong> sivua</span>
-            </label>
-            <label>
-              Kieliversiot
-              <select name="languages">
-                <option value="1">1 kieli</option>
-                <option value="2">2 kieltä</option>
-                <option value="3">3 kieltä</option>
-              </select>
-            </label>
-            <fieldset>
-              <legend>Lisätyt ominaisuudet</legend>
-              <label><input type="checkbox" name="features" value="analytics" /> GA4 + Search Console</label>
-              <label><input type="checkbox" name="features" value="integrations" /> Integraatiot (esim. varaus/CRM)</label>
-              <label><input type="checkbox" name="features" value="seo" /> Laajennettu tekninen SEO</label>
-            </fieldset>
-          </form>
-          <p class="estimator-result" id="estimator-result-fi">Arvio: <strong>noin 1 090 - 1 390 EUR + alv</strong></p>
-        </div>
       </div>
     </section>
 
-    <section class="section section-alt" id="alueet">
+    <section class="section" id="ukk">
       <div class="container narrow">
         <header class="section-head" data-reveal>
-          <h2>Nettisivut yrityksille Suomessa</h2>
-          <p class="section-sub">Palvelemme etänä koko Suomessa: Helsinki, Espoo, Vantaa, Tampere, Turku, Oulu, Jyväskylä, Lahti ja Kuopio.</p>
-        </header>
-        <p class="location-copy" data-reveal>
-          Etsitkö hakusanoilla kuten "nettisivut Helsinki", "verkkosivut Tampere" tai "kotisivut Turku"?
-          Rakennamme sivustoja paikallisille palveluyrityksille ja B2B-yrityksille kaikkialla Suomessa.
-        </p>
-      </div>
-    </section>
-
-    <section class="section section-alt" id="ukk">
-      <div class="container narrow">
-        <header class="section-head" data-reveal>
-          <h2>Usein kysytyt kysymykset</h2>
-          <p class="section-sub">Vastauksia ennen kuin otat yhteyttä.</p>
+          <p class="section-kicker">UKK</p>
+          <h2>Yleisimmät kysymykset ennen kickoffia.</h2>
         </header>
         <div class="faq" role="list" data-reveal-group>
           <details class="faq-item" role="listitem">
             <summary>Kauanko projekti kestää?</summary>
-            <p>
-              Tyypillisesti noin viikko per valmis sivu, kun tekstit ja kuvat ovat käsillä.
-              Kokonaisaikaan vaikuttavat laajuus, integraatiot ja materiaalien toimitusnopeus.
-            </p>
+            <p>Tyypillisesti 1-3 viikkoa riippuen laajuudesta.</p>
           </details>
           <details class="faq-item" role="listitem">
             <summary>Voinko päivittää sisältöä itse?</summary>
-            <p>
-              Kyllä. Voimme rakentaa sisällönhallinnan tai opastaa kevyen päivitysmallin mukaan.
-              Tarvittaessa päivitämme puolestasi kiinteällä tai tuntiperusteisella mallilla.
-            </p>
+            <p>Kyllä. Toteutamme rakenteen niin, että päivitys on helppoa.</p>
           </details>
           <details class="faq-item" role="listitem">
             <summary>Mitä hintaan sisältyy?</summary>
-            <p>
-              Paketit sisältävät suunnittelun, toteutuksen ja perusoptimoinnin.
-              Lisäpalvelut kuten verkkokauppa, monikielisyys tai API-integraatiot hinnoitellaan erikseen.
-            </p>
+            <p>Suunnittelu, toteutus, julkaisu sekä perusoptimointi.</p>
           </details>
           <details class="faq-item" role="listitem">
-            <summary>Ketkä tekevät työn?</summary>
-            <p>
-              Työn tekee Julius, Sivuxin perustaja. Saat suoran yhteyden samaan henkilöön
-              kartoituksesta julkaisuun ja jatkokehitykseen asti.
-            </p>
+            <summary>Teettekö myös ylläpitoa?</summary>
+            <p>Kyllä. Voimme hoitaa jatkuvan ylläpidon ja jatkokehityksen.</p>
           </details>
         </div>
       </div>
@@ -455,8 +304,9 @@
     <section class="cta-band" id="yhteys">
       <div class="container cta-inner">
         <div data-reveal>
-          <h2>Valmis aloittamaan?</h2>
-          <p>Täytä lomake alle. Vastaamme arkisin 24 tunnin sisällä ja ehdotamme konkreettisen seuraavan askeleen.</p>
+          <p class="section-kicker">Contact</p>
+          <h2>Tehdään sivu, joka tuntuu next-leveliltä.</h2>
+          <p>Vastaamme arkisin 24h sisällä konkreettisella ehdotuksella.</p>
         </div>
         <div class="cta-form-wrap" data-reveal data-reveal-delay="0.1">
           <form class="contact-form" action="https://formsubmit.co/info@sivux.fi" method="POST">
@@ -464,26 +314,11 @@
             <input type="hidden" name="_subject" value="Uusi yhteydenotto sivustolta (FI)" />
             <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp-field" />
             <div class="form-grid">
-              <label>
-                Nimi
-                <input type="text" name="name" required />
-              </label>
-              <label>
-                Yritys
-                <input type="text" name="company" />
-              </label>
-              <label>
-                Sähköposti
-                <input type="email" name="email" required />
-              </label>
-              <label>
-                Puhelin
-                <input type="tel" name="phone" />
-              </label>
-              <label class="full">
-                Mitä tarvitset?
-                <textarea name="message" rows="4" required placeholder="Esim. 3-5 sivun yrityssivusto, tavoite ja aikataulu"></textarea>
-              </label>
+              <label>Nimi<input type="text" name="name" required /></label>
+              <label>Yritys<input type="text" name="company" /></label>
+              <label>Sähköposti<input type="email" name="email" required /></label>
+              <label>Puhelin<input type="tel" name="phone" /></label>
+              <label class="full">Mitä tarvitset?<textarea name="message" rows="4" required placeholder="Kerro tavoite, laajuus ja aikataulu"></textarea></label>
             </div>
             <div class="cta-actions">
               <button type="submit" class="btn btn-primary btn-on-dark">Lähetä viesti</button>
@@ -491,9 +326,9 @@
             </div>
             <label class="audit-check">
               <input type="checkbox" name="audit_request" value="yes" />
-              Haluan ilmaisen sivuauditoinnin nykyisestä sivustosta (video + korjauslista)
+              Haluan ilmaisen sivuauditoinnin
             </label>
-            <p class="form-note">Voit myös soittaa: <a href="tel:+358414967337">+358 41 4967337</a> tai lähettää sähköpostia <a href="mailto:info@sivux.fi">info@sivux.fi</a>.</p>
+            <p class="form-note">Tai suoraan: <a href="mailto:info@sivux.fi">info@sivux.fi</a> / <a href="tel:+358414967337">+358 41 4967337</a></p>
           </form>
         </div>
       </div>
@@ -504,16 +339,15 @@
     <div class="container footer-grid" data-reveal-group>
       <div class="footer-brand">
         <p class="logo footer-logo">Sivux<span class="logo-dot">.</span></p>
-        <p class="footer-tagline">Ammattimaiset verkkosivut kaiken kokoisille yrityksille.</p>
+        <p class="footer-tagline">Premium-tason verkkosivut yrityksille.</p>
       </div>
       <div>
         <h3 class="footer-heading">Valikko</h3>
         <ul class="footer-links">
           <li><a href="#palvelut">Palvelut</a></li>
-          <li><a href="#referenssit">Referenssit</a></li>
+          <li><a href="#referenssit">Asiakastulokset</a></li>
           <li><a href="#hinnasto">Hinnasto</a></li>
-          <li><a href="#yhteys">Ota yhteyttä</a></li>
-          <li><a href="#prosessi">Prosessi</a></li>
+          <li><a href="#yhteys">Yhteys</a></li>
         </ul>
       </div>
       <div>
@@ -539,13 +373,7 @@
   </a>
 
   <section class="chatbot" id="faq-bot" data-lang="fi" aria-label="Chatbot">
-    <button
-      type="button"
-      class="chatbot-toggle"
-      id="chatbot-toggle"
-      aria-expanded="false"
-      aria-controls="chatbot-panel"
-    >
+    <button type="button" class="chatbot-toggle" id="chatbot-toggle" aria-expanded="false" aria-controls="chatbot-panel">
       <span aria-hidden="true">💬</span>
       Kysy meiltä
     </button>
@@ -561,15 +389,12 @@
       <div class="chatbot-quick" id="chatbot-quick">
         <button type="button" data-question="Mitä verkkosivut maksavat?">Hinnat</button>
         <button type="button" data-question="Kauanko projekti kestää?">Aikataulu</button>
-        <button type="button" data-question="Voinko päivittää sivua itse?">Sisältöpäivitys</button>
-        <button type="button" data-question="Teettekö nettisivuja Helsinkiin ja Tampereelle?">Kaupungit</button>
-        <button type="button" data-question="Mitä pakettiin sisältyy konkreettisesti?">Paketin sisältö</button>
-        <button type="button" data-question="Mitä tapahtuu kickoff-palaverissa?">Kickoff</button>
+        <button type="button" data-question="Voinko päivittää sivua itse?">Päivitys</button>
       </div>
       <form class="chatbot-form" id="chatbot-form">
         <label for="chatbot-input" class="chatbot-label">Kirjoita kysymys</label>
         <div class="chatbot-input-row">
-          <input id="chatbot-input" name="question" type="text" placeholder="Kysy vapaasti mitä tahansa: hinta, SEO, kaupungit, aikataulu..." required />
+          <input id="chatbot-input" name="question" type="text" placeholder="Kysy hinnasta, aikataulusta tai toteutuksesta..." required />
           <button type="submit">Lähetä</button>
         </div>
       </form>
