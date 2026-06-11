@@ -592,6 +592,26 @@ input[type="button"] {
 }
 
 .section-head-row { display: flex; justify-content: space-between; align-items: flex-end; max-width: none; text-align: left; }
+
+.seo-copy {
+  margin: 0 auto;
+  max-width: 68ch;
+  text-align: center;
+  color: var(--muted);
+}
+
+.seo-copy p {
+  margin: 0 0 1rem;
+}
+
+.seo-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.seo-copy strong {
+  color: var(--text);
+  font-weight: 600;
+}
 @media (max-width: 720px) { .section-head-row { flex-direction: column; align-items: flex-start; gap: 1rem; } }
 
 .link-arrow { font-weight: 700; color: var(--accent); }
