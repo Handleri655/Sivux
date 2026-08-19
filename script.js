@@ -263,7 +263,7 @@
     var content = {
       fi: {
         welcome:
-          "Moikka! Voin auttaa yleisissä kysymyksissä (hinta, aikataulu, ylläpito, päivitykset).",
+          "Moikka! Voin auttaa yleisissä kysymyksissä (hinta, aikataulu, hakukoneoptimointi, ylläpito).",
         unknown:
           "En osannut vastata tähän varmasti.\nVoit kysyä meiltä suoraan:\n✉ info@sivux.fi\n☎ +358 41 4967337",
         rules: [
@@ -303,6 +303,11 @@
               "Paketeissa on nyt avattu konkreettinen sisältö (esim. yhteydenottolomake, GA4, SEO-perusasetukset, 2 kieltä Kasvu-paketissa). Katso hinnasto-osion listat.",
           },
           {
+            keys: ["hakukone", "seo", "google", "optimointi", "hakutulos", "nakyvyys", "search console"],
+            answer:
+              "Kyllä, meiltä onnistuu hakukoneoptimointi. Jokaisessa projektissa teemme SEO-perustan (otsikot, meta, sitemap, nopeus, mobiili). Tarvittaessa teemme myös laajempaa SEO:ta, kuten teknistä optimointia ja paikallista näkyvyyttä.",
+          },
+          {
             keys: ["kickoff", "aloitus", "palaveri", "ensimma", "ensimmainen"],
             answer:
               "Kickoffissa sovitaan tavoite, kohderyhmä, rakenne, vastuut ja aikataulu. Sen jälkeen saat kirjallisen etenemissuunnitelman.",
@@ -311,7 +316,7 @@
       },
       en: {
         welcome:
-          "Hi! I can help with common questions (pricing, timeline, maintenance, content updates).",
+          "Hi! I can help with common questions (pricing, timeline, SEO, maintenance).",
         unknown:
           "I am not fully sure about this one.\nPlease contact us directly:\n✉ info@sivux.fi\n☎ +358 41 4967337",
         rules: [
@@ -349,6 +354,11 @@
             keys: ["included", "package", "ga4", "analytics", "search console", "seo", "form"],
             answer:
               "Each package now lists concrete scope (for example contact form, GA4 setup, SEO baseline, and FI/EN in the Growth package). Check the pricing section for details.",
+          },
+          {
+            keys: ["seo", "search engine", "google", "optimization", "visibility", "search console"],
+            answer:
+              "Yes, we also deliver search engine optimization. Every project includes an SEO baseline (titles, meta, sitemap, speed, mobile). We can also do broader SEO such as technical optimization and local visibility.",
           },
           {
             keys: ["kickoff", "first meeting", "onboarding", "start", "discovery call"],

@@ -86,8 +86,8 @@
         "url": "https://sivux.fi/en.html",
         "provider": { "@id": "https://sivux.fi/#organization" },
         "areaServed": { "@type": "Country", "name": "Finland" },
-        "serviceType": ["Business websites", "Web design", "Website maintenance"],
-        "description": "Website design and development for businesses: responsive sites, contact forms, integrations, and maintenance.",
+        "serviceType": ["Business websites", "Web design", "Website maintenance", "Search engine optimization"],
+        "description": "Website design, development, and SEO for businesses: responsive sites, technical SEO, analytics, and maintenance.",
         "priceRange": "€€"
       },
       {
@@ -124,6 +124,14 @@
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Yes. We serve companies remotely across Finland, including Helsinki, Espoo, Vantaa, Tampere, Turku, and Oulu."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you offer search engine optimization?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Every project includes an SEO baseline: titles, meta descriptions, sitemap, speed, and mobile. We also offer broader SEO work such as keyword research, technical SEO, and local visibility."
             }
           }
         ]
@@ -181,21 +189,20 @@
           </div>
         </div>
         <div class="hero-stage" data-reveal data-reveal-delay="0.12">
-          <article class="hero-panel hero-panel-main">
+          <article class="hero-panel">
             <p class="hero-panel-kicker">Timeline</p>
             <p class="hero-number">10 days</p>
-            <h3>typical launch after kickoff</h3>
-            <p>Once content is ready, we move on a clear schedule without unnecessary delays.</p>
+            <p>Typical launch within 10 business days after kickoff.</p>
           </article>
           <article class="hero-panel">
             <p class="hero-panel-kicker">Pricing</p>
             <p class="hero-number">from 449 €</p>
-            <p>Transparent packages. You know the cost before we start.</p>
+            <p>Transparent packages — you know the cost before we start.</p>
           </article>
           <article class="hero-panel">
             <p class="hero-panel-kicker">Outcome</p>
             <p class="hero-number">Leads</p>
-            <p>Structure, CTAs, and forms designed so visitors actually get in touch.</p>
+            <p>Structure and forms designed to drive contact requests.</p>
           </article>
         </div>
       </div>
@@ -221,30 +228,56 @@
       <div class="container">
         <header class="section-head" data-reveal>
           <p class="section-kicker">Services</p>
-          <h2>Professional websites built to support growth and trust.</h2>
+          <h2>Websites, SEO, and maintenance in one place</h2>
         </header>
         <div class="cards grid-4" data-reveal-group>
           <article class="card">
-            <h3>Creative Direction</h3>
-            <p>Distinct visual storytelling that makes your brand stand out instantly.</p>
+            <h3>Web design</h3>
+            <p>Clear, trustworthy websites that support sales and brand credibility.</p>
           </article>
           <article class="card">
-            <h3>Web Build</h3>
-            <p>Fast, lightweight implementation with clear technical structure.</p>
+            <h3>Web build</h3>
+            <p>Fast, lightweight, responsive implementation without unnecessary technical debt.</p>
           </article>
           <article class="card">
-            <h3>Conversion Design</h3>
-            <p>Messaging, sections, and CTAs designed to increase qualified inquiries.</p>
+            <h3>Search engine optimization</h3>
+            <p>We help your site get found on Google: technical SEO, content structure, and local visibility.</p>
           </article>
           <article class="card">
-            <h3>Growth Support</h3>
-            <p>Maintenance, analytics, and iterative improvements after launch.</p>
+            <h3>Maintenance & growth</h3>
+            <p>Ongoing support, analytics, and improvements after launch.</p>
           </article>
+        </div>
+
+        <div class="subsection" id="seo">
+          <header class="section-head section-head--compact" data-reveal>
+            <p class="section-kicker">SEO</p>
+            <h2>We also deliver search engine optimization</h2>
+            <p class="section-sub">Website and SEO in one package — no guesswork.</p>
+          </header>
+          <div class="cards grid-4" data-reveal-group>
+            <article class="card">
+              <h3>SEO baseline at launch</h3>
+              <p>Titles, meta descriptions, sitemap, speed, and mobile ready from day one.</p>
+            </article>
+            <article class="card">
+              <h3>Technical SEO</h3>
+              <p>Structure, indexability, redirects, and Search Console configured correctly.</p>
+            </article>
+            <article class="card">
+              <h3>Local visibility</h3>
+              <p>Help customers find you for searches like “business websites Helsinki” or “web design Tampere”.</p>
+            </article>
+            <article class="card">
+              <h3>Keywords & content</h3>
+              <p>Keyword research and content structure so the right customers find your site.</p>
+            </article>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="process">
+    <section class="section section-alt" id="process">
       <div class="container">
         <header class="section-head" data-reveal>
           <p class="section-kicker">Process</p>
@@ -275,7 +308,7 @@
       </div>
     </section>
 
-    <section class="section section-alt" id="pricing">
+    <section class="section" id="pricing">
       <div class="container">
         <header class="section-head" data-reveal>
           <p class="section-kicker">Pricing</p>
@@ -330,6 +363,13 @@
             <summary>Do you work with companies across Finland?</summary>
             <p>Yes. We serve companies remotely across Finland, including Helsinki, Espoo, Vantaa, Tampere, Turku, and Oulu.</p>
           </details>
+          <details class="faq-item" role="listitem">
+            <summary>Do you offer search engine optimization?</summary>
+            <p>
+              Yes. Every project includes an SEO baseline: titles, meta descriptions, sitemap, speed, and mobile.
+              We also offer broader SEO work such as keyword research, technical SEO, and local visibility.
+            </p>
+          </details>
         </div>
       </div>
     </section>
@@ -380,8 +420,10 @@
         <h3 class="footer-heading">Menu</h3>
         <ul class="footer-links">
           <li><a href="#services">Services</a></li>
+          <li><a href="#seo">SEO</a></li>
           <li><a href="#process">Process</a></li>
           <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#faq">FAQ</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
@@ -427,7 +469,7 @@
       <div class="chatbot-quick" id="chatbot-quick">
         <button type="button" data-question="What does a website project cost?">Pricing</button>
         <button type="button" data-question="How long does a project take?">Timeline</button>
-        <button type="button" data-question="Can I update the website myself?">Updates</button>
+        <button type="button" data-question="Do you offer search engine optimization?">SEO</button>
       </div>
       <form class="chatbot-form" id="chatbot-form">
         <label for="chatbot-input" class="chatbot-label">Type your question</label>
