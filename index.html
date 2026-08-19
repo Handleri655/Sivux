@@ -237,14 +237,14 @@
       <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
       <div class="hero-grid-lines" aria-hidden="true"></div>
       <div class="container hero-grid">
-        <div class="hero-copy" data-reveal>
-          <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>Nettisivut yrityksille</p>
-          <h1>Verkkosivut, jotka tekevät yrityksestäsi helpon valinnan</h1>
-          <p class="lead">
+        <div class="hero-copy">
+          <p class="eyebrow" data-reveal><span class="eyebrow-line" aria-hidden="true"></span>Nettisivut yrityksille</p>
+          <h1 class="hero-title">Verkkosivut, jotka tekevät yrityksestäsi helpon valinnan</h1>
+          <p class="lead" data-reveal data-reveal-delay="0.55">
             Suunnittelemme ja toteutamme ammattimaiset nettisivut selkeällä hinnalla.
             Nopea startti, selkeä prosessi ja julkaisu ilman turhaa odottelua.
           </p>
-          <div class="hero-actions">
+          <div class="hero-actions" data-reveal data-reveal-delay="0.72">
             <a href="#yhteys" class="btn btn-primary" data-track="cta_kickoff_hero">Aloita projekti</a>
             <a href="#hinnasto" class="btn btn-ghost" data-track="cta_pricing_hero">Katso hinnasto</a>
           </div>
@@ -271,15 +271,15 @@
     <section class="trust-strip" aria-label="Luottamustekijät">
       <div class="container trust-grid" data-reveal-group>
         <article class="trust-item">
-          <p class="trust-value">24h</p>
+          <p class="trust-value"><span class="count-up" data-count-to="24" data-suffix="h">24h</span></p>
           <p class="trust-label">Vastausaika arkipäivisin</p>
         </article>
         <article class="trust-item">
-          <p class="trust-value">10 pv</p>
+          <p class="trust-value"><span class="count-up" data-count-to="10" data-suffix=" pv">10 pv</span></p>
           <p class="trust-label">Toimituslupaus kickoffin jälkeen</p>
         </article>
         <article class="trust-item">
-          <p class="trust-value">100%</p>
+          <p class="trust-value"><span class="count-up" data-count-to="100" data-suffix="%">100%</span></p>
           <p class="trust-label">Responsiivinen toteutus</p>
         </article>
       </div>
@@ -375,27 +375,92 @@
           <p class="section-kicker">Hinnasto</p>
           <h2>Selkeä lähtöpaketti. Ei yllätyksiä.</h2>
         </header>
+
+        <div class="estimator" id="hintalaskuri" data-reveal>
+          <div class="estimator-grid">
+            <div class="estimator-controls">
+              <h3 class="estimator-title">Laske hinta-arvio</h3>
+              <p class="estimator-lead">Säädä laajuus — näet suuntaa-antavan paketin ja hinnan heti.</p>
+
+              <label class="estimator-field">
+                <span class="estimator-label">Sivumäärä: <strong id="est-pages-val">3</strong></span>
+                <input type="range" id="est-pages" min="1" max="10" value="3" step="1" />
+              </label>
+
+              <fieldset class="estimator-field">
+                <legend class="estimator-label">Kieliversiot</legend>
+                <div class="estimator-options">
+                  <label class="estimator-chip"><input type="radio" name="est-langs" value="1" checked /> 1 kieli</label>
+                  <label class="estimator-chip"><input type="radio" name="est-langs" value="2" /> 2 kieltä (+200 €)</label>
+                </div>
+              </fieldset>
+
+              <label class="estimator-check">
+                <input type="checkbox" id="est-seo" />
+                Laajennettu SEO (+250 €)
+              </label>
+
+              <label class="estimator-check">
+                <input type="checkbox" id="est-integrations" />
+                Integraatiot (+200 €)
+              </label>
+            </div>
+
+            <aside class="estimator-result" aria-live="polite">
+              <p class="estimator-result-kicker">Arvioitu paketti</p>
+              <p class="estimator-result-package" id="est-package">Growth</p>
+              <p class="estimator-result-price" id="est-price">alk. 949 € + alv</p>
+              <p class="estimator-result-note" id="est-note">3–5 sivua, konversiorakenne ja SEO-perusta.</p>
+              <a href="#yhteys" class="btn btn-primary" data-track="cta_estimator_quote">Pyydä tarkka tarjous</a>
+            </aside>
+          </div>
+        </div>
+
         <div class="pricing" data-reveal-group>
           <article class="price-card">
             <h3>Starter</h3>
             <p class="price">alk. 449 EUR</p>
             <p class="price-desc">1-2 sivua, nopea launch.</p>
+            <ul class="price-features">
+              <li>Responsiivinen toteutus</li>
+              <li>SEO-perusta julkaisussa</li>
+              <li>Yhteydenottolomake</li>
+              <li>GA4-perusasennus</li>
+            </ul>
           </article>
           <article class="price-card price-featured">
             <p class="price-badge">Suosituin</p>
             <h3>Growth</h3>
             <p class="price">alk. 949 EUR</p>
             <p class="price-desc">3-5 sivua, vahva konversiorakenne.</p>
+            <ul class="price-features">
+              <li>Kaikki Starterin edut</li>
+              <li>3–5 sivua + CTA-rakenne</li>
+              <li>FI/EN valmiina</li>
+              <li>Search Console -asetukset</li>
+            </ul>
           </article>
           <article class="price-card">
             <h3>Pro</h3>
             <p class="price">alk. 1 449 EUR</p>
             <p class="price-desc">Laajempi sivusto + integraatiot.</p>
+            <ul class="price-features">
+              <li>6–8 sivua</li>
+              <li>Integraatiot &amp; lomakkeet</li>
+              <li>Laajempi SEO</li>
+              <li>Priorisoitu tuki</li>
+            </ul>
           </article>
           <article class="price-card">
             <h3>Custom</h3>
             <p class="price">alk. 1 899 EUR</p>
             <p class="price-desc">Täysin räätälöity digitaalinen kokonaisuus.</p>
+            <ul class="price-features">
+              <li>Räätälöity design &amp; rakenne</li>
+              <li>Monikielisyys &amp; API:t</li>
+              <li>Laajat integraatiot</li>
+              <li>Jatkokehityssuunnitelma</li>
+            </ul>
           </article>
         </div>
       </div>
@@ -591,6 +656,7 @@
     </div>
   </section>
 
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

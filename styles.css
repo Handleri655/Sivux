@@ -32,6 +32,19 @@
 
 html { scroll-behavior: smooth; background: #05060a; }
 
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -311,6 +324,7 @@ input[type="button"] {
   overflow: hidden;
   --mx: 0;
   --my: 0;
+  --scroll-y: 0px;
 }
 
 .hero-orb {
@@ -327,7 +341,7 @@ input[type="button"] {
   background: rgba(187, 155, 255, 0.38);
   top: -140px;
   right: -80px;
-  transform: translate3d(calc(var(--mx) * 20px), calc(var(--my) * 16px), 0);
+  transform: translate3d(calc(var(--mx) * 20px), calc(var(--my) * 16px - var(--scroll-y) * 0.35), 0);
 }
 
 .hero-orb-b {
@@ -336,7 +350,7 @@ input[type="button"] {
   background: rgba(115, 255, 202, 0.22);
   left: -120px;
   bottom: 40px;
-  transform: translate3d(calc(var(--mx) * -16px), calc(var(--my) * -18px), 0);
+  transform: translate3d(calc(var(--mx) * -16px), calc(var(--my) * -18px - var(--scroll-y) * 0.2), 0);
 }
 
 .hero-grid-lines {
@@ -418,6 +432,46 @@ input[type="button"] {
 .hero h1 {
   letter-spacing: -0.03em;
   text-wrap: balance;
+}
+
+.hero-title.is-split {
+  opacity: 1;
+}
+
+.hero-title.is-split .hero-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 1.05em, 0);
+  filter: blur(10px);
+}
+
+.hero-title.is-animated .hero-word {
+  animation: hero-word-in 0.78s var(--ease-out) forwards;
+  animation-delay: calc(0.14s + var(--word-index) * 0.065s);
+}
+
+.hero-word--accent {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--accent-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes hero-word-in {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title.is-split .hero-word {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    animation: none !important;
+  }
 }
 
 .lead {
@@ -795,6 +849,11 @@ input[type="button"] {
   position: relative;
 }
 
+.price-card--match {
+  border-color: rgba(115, 255, 202, 0.58);
+  box-shadow: var(--shadow-soft), 0 0 0 1px rgba(115, 255, 202, 0.22);
+}
+
 .price-badge {
   position: absolute;
   top: -0.65rem;
@@ -820,6 +879,198 @@ input[type="button"] {
 .price-desc {
   margin: 0;
   color: var(--muted);
+}
+
+.price-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.4s var(--ease-out),
+    opacity 0.32s ease,
+    margin-top 0.32s ease;
+}
+
+.price-features li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.price-features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: linear-gradient(120deg, var(--accent), var(--accent-3));
+}
+
+.price-card:hover .price-features,
+.price-card:focus-within .price-features {
+  margin-top: 0.85rem;
+  max-height: 10rem;
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .price-features {
+    margin-top: 0.85rem;
+    max-height: none;
+    opacity: 1;
+  }
+}
+
+.estimator {
+  margin-bottom: 2rem;
+}
+
+.estimator-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+@media (max-width: 860px) {
+  .estimator-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.estimator-controls,
+.estimator-result {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.estimator-result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  background:
+    linear-gradient(150deg, rgba(138, 243, 255, 0.1), rgba(187, 155, 255, 0.06)),
+    var(--panel);
+  border-color: rgba(138, 243, 255, 0.28);
+}
+
+.estimator-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+}
+
+.estimator-lead {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.estimator-field {
+  display: block;
+  margin: 0 0 1rem;
+  border: 0;
+  padding: 0;
+}
+
+.estimator-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.estimator-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.estimator-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.estimator-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.24s ease, background 0.24s ease;
+}
+
+.estimator-chip:has(input:checked) {
+  border-color: rgba(138, 243, 255, 0.55);
+  background: rgba(138, 243, 255, 0.1);
+}
+
+.estimator-check {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.65rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.estimator-check input {
+  accent-color: var(--accent-3);
+}
+
+.estimator-result-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-3);
+  font-weight: 700;
+}
+
+.estimator-result-package {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.estimator-result-price {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.estimator-result-note {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.estimator-result .btn {
+  align-self: center;
+}
+
+.count-up.is-animating {
+  display: inline-block;
+  min-width: 2ch;
 }
 
 .faq {

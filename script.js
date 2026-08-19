@@ -5,6 +5,7 @@
   var siteHeader = document.querySelector(".site-header");
   var toTop = document.getElementById("to-top");
   var navSectionLinks = document.querySelectorAll("[data-nav-section]");
+  var smoothScroll = null;
 
   if (yearEl) {
     yearEl.textContent = String(new Date().getFullYear());
@@ -24,7 +25,42 @@
     });
   }
 
-  function initScrollUi() {
+  function prefersReducedMotion() {
+    return (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function initLenis() {
+    if (prefersReducedMotion() || typeof window.Lenis !== "function") {
+      return null;
+    }
+
+    var lenis = new window.Lenis({
+      duration: 1.12,
+      easing: function (t) {
+        return Math.min(1, 1.001 - Math.pow(2, -10 * t));
+      },
+      smoothWheel: true,
+      touchMultiplier: 1.05,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      window.requestAnimationFrame(raf);
+    }
+    window.requestAnimationFrame(raf);
+
+    var chatMessages = document.getElementById("chatbot-messages");
+    if (chatMessages) {
+      chatMessages.setAttribute("data-lenis-prevent", "");
+    }
+
+    return lenis;
+  }
+
+  function initScrollUi(lenis) {
     var navOrder = [];
     navSectionLinks.forEach(function (a) {
       var id = a.getAttribute("data-nav-section");
@@ -33,11 +69,16 @@
       }
     });
 
+    var hero = document.querySelector(".hero");
     var ticking = false;
-    var lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    var lastScrollY = lenis ? lenis.scroll : window.scrollY || document.documentElement.scrollTop || 0;
+
+    function getScrollY() {
+      return lenis ? lenis.scroll : window.scrollY || document.documentElement.scrollTop || 0;
+    }
 
     function update() {
-      var scrollY = window.scrollY || document.documentElement.scrollTop;
+      var scrollY = getScrollY();
 
       if (siteHeader) {
         siteHeader.classList.toggle("is-scrolled", scrollY > 28);
@@ -50,6 +91,10 @@
         toTop.classList.toggle("is-visible", scrollY > 400);
       }
 
+      if (hero && lenis) {
+        hero.style.setProperty("--scroll-y", scrollY.toFixed(2) + "px");
+      }
+
       var activeId = "";
       var yLine = scrollY + Math.min(160, window.innerHeight * 0.22);
 
@@ -58,7 +103,7 @@
         if (!el) {
           continue;
         }
-        var top = el.getBoundingClientRect().top + window.scrollY;
+        var top = el.getBoundingClientRect().top + scrollY;
         if (top <= yLine) {
           activeId = navOrder[i];
           break;
@@ -81,26 +126,67 @@
     function requestTick() {
       if (!ticking) {
         ticking = true;
-        requestAnimationFrame(update);
+        window.requestAnimationFrame(update);
       }
     }
 
-    window.addEventListener("scroll", requestTick, { passive: true });
+    if (lenis) {
+      lenis.on("scroll", requestTick);
+    } else {
+      window.addEventListener("scroll", requestTick, { passive: true });
+    }
     window.addEventListener("resize", requestTick, { passive: true });
     update();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initScrollUi);
-  } else {
-    initScrollUi();
+  function initSmoothAnchors(lenis) {
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        var hash = link.getAttribute("href");
+        if (!hash || hash === "#") {
+          return;
+        }
+
+        var target = document.querySelector(hash);
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        var offset = siteHeader ? -(siteHeader.offsetHeight + 8) : -80;
+
+        if (lenis) {
+          lenis.scrollTo(target, { offset: offset });
+          return;
+        }
+
+        var top = target.getBoundingClientRect().top + window.scrollY + offset;
+        window.scrollTo({ top: top, behavior: "smooth" });
+      });
+    });
   }
 
-  if (toTop) {
-    toTop.addEventListener("click", function (event) {
-      event.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+  function initScrollExperience() {
+    smoothScroll = initLenis();
+    initScrollUi(smoothScroll);
+    initSmoothAnchors(smoothScroll);
+
+    if (toTop) {
+      toTop.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (smoothScroll) {
+          smoothScroll.scrollTo(0);
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initScrollExperience);
+  } else {
+    initScrollExperience();
   }
 
   function initScrollReveal() {
@@ -418,6 +504,9 @@
         return;
       }
       isOpen = true;
+      if (smoothScroll) {
+        smoothScroll.stop();
+      }
       root.classList.add("is-open");
       document.body.classList.add("chat-open");
       panel.hidden = false;
@@ -431,6 +520,9 @@
         return;
       }
       isOpen = false;
+      if (smoothScroll) {
+        smoothScroll.start();
+      }
       root.classList.remove("is-open");
       document.body.classList.remove("chat-open");
       panel.hidden = true;
@@ -613,6 +705,238 @@
         });
       });
     });
+  }
+
+  function initCountUp() {
+    var counters = document.querySelectorAll(".count-up[data-count-to]");
+    if (!counters.length) {
+      return;
+    }
+
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    function animateCounter(el) {
+      if (el.dataset.countDone === "1") {
+        return;
+      }
+      el.dataset.countDone = "1";
+
+      var target = Number(el.getAttribute("data-count-to") || "0");
+      var suffix = el.getAttribute("data-suffix") || "";
+      var duration = 1100;
+      var start = null;
+
+      el.classList.add("is-animating");
+
+      function frame(timestamp) {
+        if (!start) {
+          start = timestamp;
+        }
+        var progress = Math.min((timestamp - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var value = Math.round(target * eased);
+        el.textContent = String(value) + suffix;
+        if (progress < 1) {
+          window.requestAnimationFrame(frame);
+        }
+      }
+
+      window.requestAnimationFrame(frame);
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.6 }
+    );
+
+    counters.forEach(function (el) {
+      observer.observe(el);
+    });
+  }
+
+  function initPriceEstimator() {
+    var root = document.querySelector(".estimator");
+    if (!root) {
+      return;
+    }
+
+    var lang = document.documentElement.lang === "en" ? "en" : "fi";
+    var pagesInput = document.getElementById("est-pages");
+    var pagesVal = document.getElementById("est-pages-val");
+    var seoInput = document.getElementById("est-seo");
+    var integrationsInput = document.getElementById("est-integrations");
+    var packageEl = document.getElementById("est-package");
+    var priceEl = document.getElementById("est-price");
+    var noteEl = document.getElementById("est-note");
+
+    if (!pagesInput || !packageEl || !priceEl || !noteEl) {
+      return;
+    }
+
+    var copy = {
+      fi: {
+        pricePrefix: "alk. ",
+        priceSuffix: " € + alv",
+        notes: {
+          Starter: "1–2 sivua, nopea julkaisu ja SEO-perusta.",
+          Growth: "3–5 sivua, konversiorakenne ja SEO-perusta.",
+          Pro: "Laajempi sivusto, integraatiot ja vahvempi SEO.",
+          Custom: "Täysin räätälöity kokonaisuus ja laajat integraatiot.",
+        },
+      },
+      en: {
+        pricePrefix: "from ",
+        priceSuffix: " € + VAT",
+        notes: {
+          Starter: "1–2 pages, quick launch and SEO baseline.",
+          Growth: "3–5 pages with conversion structure and SEO baseline.",
+          Pro: "Larger website, integrations, and stronger SEO.",
+          Custom: "Fully tailored scope with advanced integrations.",
+        },
+      },
+    };
+
+    var strings = copy[lang];
+
+    function getLangCount() {
+      var selected = root.querySelector('input[name="est-langs"]:checked');
+      return selected ? Number(selected.value) : 1;
+    }
+
+    function calculate() {
+      var pages = Number(pagesInput.value);
+      var langs = getLangCount();
+      var extendedSeo = seoInput ? seoInput.checked : false;
+      var integrations = integrationsInput ? integrationsInput.checked : false;
+      var price = 449;
+      var pkg = "Starter";
+
+      if (pages <= 2) {
+        price = 449;
+        pkg = "Starter";
+      } else if (pages <= 5) {
+        price = 949;
+        pkg = "Growth";
+      } else if (pages <= 8) {
+        price = 1449;
+        pkg = "Pro";
+      } else {
+        price = 1899;
+        pkg = "Custom";
+      }
+
+      if (langs > 1) {
+        price += 200;
+      }
+      if (extendedSeo) {
+        price += 250;
+      }
+      if (integrations) {
+        price += 200;
+      }
+
+      return { pages: pages, pkg: pkg, price: price };
+    }
+
+    function formatPrice(value) {
+      if (lang === "en") {
+        return strings.pricePrefix + value.toLocaleString("en-US") + strings.priceSuffix;
+      }
+      return strings.pricePrefix + value.toLocaleString("fi-FI") + strings.priceSuffix;
+    }
+
+    function render() {
+      var result = calculate();
+      if (pagesVal) {
+        pagesVal.textContent = String(result.pages);
+      }
+      packageEl.textContent = result.pkg;
+      priceEl.textContent = formatPrice(result.price);
+      noteEl.textContent = strings.notes[result.pkg] || "";
+
+      document.querySelectorAll(".price-card").forEach(function (card) {
+        var title = card.querySelector("h3");
+        var isMatch = title && title.textContent.trim() === result.pkg;
+        card.classList.toggle("price-card--match", isMatch);
+      });
+    }
+
+    pagesInput.addEventListener("input", render);
+    root.querySelectorAll('input[name="est-langs"]').forEach(function (input) {
+      input.addEventListener("change", render);
+    });
+    if (seoInput) {
+      seoInput.addEventListener("change", render);
+    }
+    if (integrationsInput) {
+      integrationsInput.addEventListener("change", render);
+    }
+
+    render();
+  }
+
+  function initHeroTitleAnimation() {
+    var headings = document.querySelectorAll(".hero-title");
+    if (!headings.length) {
+      return;
+    }
+
+    headings.forEach(function (h1) {
+      var text = h1.textContent.trim();
+      if (!text) {
+        return;
+      }
+
+      var words = text.split(/\s+/);
+      h1.textContent = "";
+      h1.classList.add("is-split");
+
+      words.forEach(function (word, index) {
+        var span = document.createElement("span");
+        span.className = "hero-word";
+        span.textContent = word;
+        span.style.setProperty("--word-index", String(index));
+        if (index >= words.length - 2) {
+          span.classList.add("hero-word--accent");
+        }
+        h1.appendChild(span);
+        if (index < words.length - 1) {
+          h1.appendChild(document.createTextNode(" "));
+        }
+      });
+
+      if (prefersReducedMotion()) {
+        h1.classList.add("is-animated");
+        return;
+      }
+
+      window.requestAnimationFrame(function () {
+        h1.classList.add("is-animated");
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHeroTitleAnimation);
+  } else {
+    initHeroTitleAnimation();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCountUp);
+    document.addEventListener("DOMContentLoaded", initPriceEstimator);
+  } else {
+    initCountUp();
+    initPriceEstimator();
   }
 
   if (document.readyState === "loading") {

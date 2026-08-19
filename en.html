@@ -176,14 +176,14 @@
       <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
       <div class="hero-grid-lines" aria-hidden="true"></div>
       <div class="container hero-grid">
-        <div class="hero-copy" data-reveal>
-          <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>Websites for businesses</p>
-          <h1>A website that makes your business the easy choice</h1>
-          <p class="lead">
+        <div class="hero-copy">
+          <p class="eyebrow" data-reveal><span class="eyebrow-line" aria-hidden="true"></span>Websites for businesses</p>
+          <h1 class="hero-title">A website that makes your business the easy choice</h1>
+          <p class="lead" data-reveal data-reveal-delay="0.55">
             We design and build professional websites with clear pricing.
             Fast kickoff, a clear process, and launch without unnecessary waiting.
           </p>
-          <div class="hero-actions">
+          <div class="hero-actions" data-reveal data-reveal-delay="0.72">
             <a href="#contact" class="btn btn-primary" data-track="cta_kickoff_hero">Start your project</a>
             <a href="#pricing" class="btn btn-ghost" data-track="cta_pricing_hero">See pricing</a>
           </div>
@@ -210,15 +210,15 @@
     <section class="trust-strip" aria-label="Trust signals">
       <div class="container trust-grid" data-reveal-group>
         <article class="trust-item">
-          <p class="trust-value">24h</p>
+          <p class="trust-value"><span class="count-up" data-count-to="24" data-suffix="h">24h</span></p>
           <p class="trust-label">Response time on business days</p>
         </article>
         <article class="trust-item">
-          <p class="trust-value">10 days</p>
+          <p class="trust-value"><span class="count-up" data-count-to="10" data-suffix=" days">10 days</span></p>
           <p class="trust-label">Delivery promise after kickoff</p>
         </article>
         <article class="trust-item">
-          <p class="trust-value">100%</p>
+          <p class="trust-value"><span class="count-up" data-count-to="100" data-suffix="%">100%</span></p>
           <p class="trust-label">Responsive implementation</p>
         </article>
       </div>
@@ -314,27 +314,92 @@
           <p class="section-kicker">Pricing</p>
           <h2>Clear starting points. No surprises.</h2>
         </header>
+
+        <div class="estimator" id="price-estimator" data-reveal>
+          <div class="estimator-grid">
+            <div class="estimator-controls">
+              <h3 class="estimator-title">Get a price estimate</h3>
+              <p class="estimator-lead">Adjust scope — see a suggested package and ballpark price instantly.</p>
+
+              <label class="estimator-field">
+                <span class="estimator-label">Page count: <strong id="est-pages-val">3</strong></span>
+                <input type="range" id="est-pages" min="1" max="10" value="3" step="1" />
+              </label>
+
+              <fieldset class="estimator-field">
+                <legend class="estimator-label">Languages</legend>
+                <div class="estimator-options">
+                  <label class="estimator-chip"><input type="radio" name="est-langs" value="1" checked /> 1 language</label>
+                  <label class="estimator-chip"><input type="radio" name="est-langs" value="2" /> 2 languages (+200 €)</label>
+                </div>
+              </fieldset>
+
+              <label class="estimator-check">
+                <input type="checkbox" id="est-seo" />
+                Extended SEO (+250 €)
+              </label>
+
+              <label class="estimator-check">
+                <input type="checkbox" id="est-integrations" />
+                Integrations (+200 €)
+              </label>
+            </div>
+
+            <aside class="estimator-result" aria-live="polite">
+              <p class="estimator-result-kicker">Estimated package</p>
+              <p class="estimator-result-package" id="est-package">Growth</p>
+              <p class="estimator-result-price" id="est-price">from 949 € + VAT</p>
+              <p class="estimator-result-note" id="est-note">3–5 pages with conversion structure and SEO baseline.</p>
+              <a href="#contact" class="btn btn-primary" data-track="cta_estimator_quote">Request exact quote</a>
+            </aside>
+          </div>
+        </div>
+
         <div class="pricing" data-reveal-group>
           <article class="price-card">
             <h3>Starter</h3>
             <p class="price">from 449 EUR</p>
             <p class="price-desc">1-2 pages, quick launch.</p>
+            <ul class="price-features">
+              <li>Responsive implementation</li>
+              <li>SEO baseline at launch</li>
+              <li>Contact form</li>
+              <li>GA4 basic setup</li>
+            </ul>
           </article>
           <article class="price-card price-featured">
             <p class="price-badge">Most Popular</p>
             <h3>Growth</h3>
             <p class="price">from 949 EUR</p>
             <p class="price-desc">3-5 pages with conversion focus.</p>
+            <ul class="price-features">
+              <li>Everything in Starter</li>
+              <li>3–5 pages + CTA structure</li>
+              <li>FI/EN ready</li>
+              <li>Search Console setup</li>
+            </ul>
           </article>
           <article class="price-card">
             <h3>Pro</h3>
             <p class="price">from 1,449 EUR</p>
             <p class="price-desc">Larger scope with integrations.</p>
+            <ul class="price-features">
+              <li>6–8 pages</li>
+              <li>Integrations &amp; forms</li>
+              <li>Extended SEO</li>
+              <li>Priority support</li>
+            </ul>
           </article>
           <article class="price-card">
             <h3>Custom</h3>
             <p class="price">from 1,899 EUR</p>
             <p class="price-desc">Fully tailored digital experience.</p>
+            <ul class="price-features">
+              <li>Custom design &amp; structure</li>
+              <li>Multilingual &amp; APIs</li>
+              <li>Advanced integrations</li>
+              <li>Growth roadmap</li>
+            </ul>
           </article>
         </div>
       </div>
@@ -481,6 +546,7 @@
     </div>
   </section>
 
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
