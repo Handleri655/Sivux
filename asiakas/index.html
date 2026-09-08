@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#07080c" />
+  <title>Asiakasportaali | Sivux</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="portal.css" />
+</head>
+<body class="portal-body">
+  <main class="portal-shell">
+    <section class="portal-card portal-login-card">
+      <div class="portal-brand">
+        <img src="../favicon.svg" alt="" width="36" height="36" />
+        <div>
+          <p class="portal-kicker">Sivux</p>
+          <h1>Asiakasportaali</h1>
+        </div>
+      </div>
+      <p class="portal-lead">Kirjaudu sisään nähdäksesi sivustosi kävijätiedot.</p>
+
+      <form id="login-form" class="portal-form" novalidate>
+        <label>
+          Sähköposti
+          <input id="email" name="email" type="email" autocomplete="username" required placeholder="esim. jk@bestcarwash.fi" />
+        </label>
+        <label>
+          Salasana
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" class="btn btn-primary" id="login-submit">Kirjaudu</button>
+        <p class="portal-status" id="login-status" hidden></p>
+      </form>
+
+      <p class="portal-footnote">
+        <a href="../index.html">← Takaisin sivux.fi</a>
+      </p>
+    </section>
+  </main>
+  <script src="portal.js"></script>
+</body>
+</html>

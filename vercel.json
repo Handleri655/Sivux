@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/asiakas", "destination": "/asiakas/index.html" },
+    { "source": "/asiakas/dashboard", "destination": "/asiakas/dashboard.html" }
+  ]
+}

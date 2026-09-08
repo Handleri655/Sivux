@@ -1,0 +1,9 @@
+{
+  "name": "sivux",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sivux website and client portal",
+  "engines": {
+    "node": ">=18"
+  }
+}
