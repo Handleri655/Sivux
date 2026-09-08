@@ -828,6 +828,11 @@ input[type="button"] {
 
 .step p { margin: 0; color: var(--muted); }
 
+.case-list {
+  display: grid;
+  gap: 1.25rem;
+}
+
 .case-feature {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
