@@ -356,7 +356,7 @@
           {
             keys: ["hinta", "maks", "paljon", "euro", "paketti"],
             answer:
-              "Meillä hinnat alkavat noin 449 EUR + alv. Lopullinen hinta riippuu sivujen määrästä, sisällöstä ja mahdollisista integraatioista.",
+              "Meillä hinnat alkavat noin 500 EUR + alv. Lopullinen hinta riippuu sivujen määrästä, sisällöstä ja mahdollisista integraatioista.",
           },
           {
             keys: ["kesto", "kauan", "aikataulu", "viikko", "milloin"],
@@ -409,7 +409,7 @@
           {
             keys: ["price", "pricing", "cost", "package", "euro"],
             answer:
-              "Our projects typically start from around 449 EUR + VAT. Final pricing depends on page count, content scope, and integrations.",
+              "Our projects typically start from around 500 EUR + VAT. Final pricing depends on page count, content scope, and integrations.",
           },
           {
             keys: ["timeline", "how long", "duration", "weeks", "time"],
@@ -848,11 +848,11 @@
       var langs = getLangCount();
       var extendedSeo = seoInput ? seoInput.checked : false;
       var integrations = integrationsInput ? integrationsInput.checked : false;
-      var price = 449;
+      var price = 500;
       var pkg = "Starter";
 
       if (pages <= 2) {
-        price = 449;
+        price = 500;
         pkg = "Starter";
       } else if (pages <= 5) {
         price = 949;
