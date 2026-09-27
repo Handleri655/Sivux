@@ -2202,11 +2202,17 @@ html.js-reveal [data-reveal-group].is-revealed > *:nth-child(4) { transition-del
 .audit-categories {
   margin-top: 1.35rem;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.65rem;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1100px) {
+  .audit-categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
   .audit-categories {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

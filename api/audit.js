@@ -180,6 +180,33 @@ function extractSignals(html, finalUrl) {
   var heroSlice = textFull.slice(0, 500).toLowerCase();
   var ctaInHero = /\b(ota yhteytt|varaa|pyyd[aä]|soita|yhteydenotto|contact|book)\b/.test(heroSlice);
 
+  var headChunk = String(html || "").slice(0, 80000);
+  var styleChunks = (String(html || "").match(/<style[\s\S]*?<\/style>/gi) || []).join("\n");
+  var cssSample = styleChunks.slice(0, 40000);
+  var hasGoogleFonts = /fonts\.googleapis\.com|fonts\.gstatic\.com/i.test(headChunk);
+  var hasFontFace = /@font-face/i.test(cssSample) || /fonts\.adobe\.com|use\.typekit\.net/i.test(headChunk);
+  var hasCustomFonts = hasGoogleFonts || hasFontFace;
+  var hexColors = cssSample.match(/#([0-9a-f]{3}|[0-9a-f]{6})\b/gi) || [];
+  var uniqueColors = {};
+  hexColors.forEach(function (c) {
+    uniqueColors[c.toLowerCase()] = true;
+  });
+  var uniqueColorCount = Object.keys(uniqueColors).length;
+  var mediaQueryCount = countMatches(cssSample + headChunk, /@media\b/gi);
+  var hasCssVariables = /--[a-z0-9-]+:/i.test(cssSample);
+  var hasTransitions = /transition\s*:/i.test(cssSample) || /animation\s*:/i.test(cssSample);
+  var hasBackgroundImage = /background(-image)?\s*:[^;]*url\(/i.test(cssSample + String(html || "").slice(0, 20000));
+  var hasSvg = /<svg\b/i.test(html) || /\.svg["'\s>]/i.test(html);
+  var hasModernImage = /\.(webp|avif)(["'\s?]|&)/i.test(html);
+  var hasVideo = /<video\b|<iframe[^>]+(youtube|vimeo)/i.test(html);
+  var hasFavicon = /rel=["'][^"']*icon/i.test(headChunk);
+  var usesBootstrap = /bootstrap(\.min)?\.css|class=["'][^"']*\b(container-fluid|col-md-|navbar-toggler)\b/i.test(html);
+  var usesGenericBuilder =
+    /wp-content\/themes|elementor|wix\.com|squarespace|webflow\.io|cdn\.shopify\.com|jimdo|ones.com/i.test(html);
+  var usesTableLayout = countMatches(html, /<table\b/gi) >= 3 && countMatches(html, /<div\b/gi) < 20;
+  var inlineStyleCount = countMatches(html, /\sstyle=["']/gi);
+  var hasHeroMedia = hasBackgroundImage || images >= 2 || hasVideo || hasSvg;
+
   return {
     url: finalUrl,
     title: title,
@@ -206,6 +233,20 @@ function extractSignals(html, finalUrl) {
     trustHints: trustHints,
     htmlBytes: Buffer.byteLength(html, "utf8"),
     textSample: text.slice(0, 2500),
+    hasCustomFonts: hasCustomFonts,
+    uniqueColorCount: uniqueColorCount,
+    mediaQueryCount: mediaQueryCount,
+    hasCssVariables: hasCssVariables,
+    hasTransitions: hasTransitions,
+    hasHeroMedia: hasHeroMedia,
+    hasSvg: hasSvg,
+    hasModernImage: hasModernImage,
+    hasVideo: hasVideo,
+    hasFavicon: hasFavicon,
+    usesBootstrap: usesBootstrap,
+    usesGenericBuilder: usesGenericBuilder,
+    usesTableLayout: usesTableLayout,
+    inlineStyleCount: inlineStyleCount,
   };
 }
 
@@ -234,6 +275,7 @@ function heuristicAudit(signals) {
   var seo = 50;
   var trust = 48;
   var conversion = 48;
+  var visual = 52;
   var critical = [];
   var positives = [];
   var fixes = [];
@@ -489,14 +531,113 @@ function heuristicAudit(signals) {
     mobile += 5;
   }
 
+  // Visual / aesthetic — "onko sivu kiva silmälle"
+  if (signals.hasCustomFonts) {
+    visual += 14;
+    positives.push("Sivulla on omat fontit — typografia ei ole pelkkää järjestelmäfonttia.");
+  } else {
+    visual -= 10;
+    pushFix(fixes, {
+      title: "Vahvista typografiaa",
+      why: "Järjestelmäfontit tekevät sivusta geneerisen.",
+      how: "Valitse 1–2 brändifonttia (esim. Google Fonts) otsikolle ja leipätekstille.",
+      impact: 8,
+    });
+  }
+
+  if (signals.uniqueColorCount >= 4 && signals.uniqueColorCount <= 14) {
+    visual += 12;
+  } else if (signals.uniqueColorCount >= 2) {
+    visual += 5;
+  } else {
+    visual -= 8;
+    critical.push("Visuaalinen ilme on ohut — väripaletti tai tyylitys ei erotu.");
+    pushFix(fixes, {
+      title: "Rakenna selkeä väripaletti",
+      why: "Ilman harkittuja värejä sivu tuntuu keskeneräiseltä.",
+      how: "Valitse 1 pääväri + neutraalit + CTA-aksentti ja käytä niitä johdonmukaisesti.",
+      impact: 9,
+    });
+  }
+  if (signals.uniqueColorCount > 18) {
+    visual -= 10;
+    critical.push("Liian monia värejä — ilme tuntuu sekavalta.");
+  }
+
+  if (signals.hasHeroMedia) {
+    visual += 10;
+    positives.push("Hero/etusivulla on visuaalista ankkuria (kuva, media tai grafiikka).");
+  } else {
+    visual -= 12;
+    critical.push("Etusivulta puuttuu vahva visuaalinen ankkuri — ensivaikutelma jää latteaksi.");
+    pushFix(fixes, {
+      title: "Lisää hero-visuaali",
+      why: "Ilman kuvaa/grafiikkaa sivu ei tunnu premiumilta.",
+      how: "Laita edge-to-edge hero (kuva, gradientti tai tuotevisuaali) + yksi vahva headline.",
+      impact: 11,
+    });
+  }
+
+  if (signals.hasCssVariables || signals.hasTransitions) {
+    visual += 8;
+  }
+  if (signals.mediaQueryCount >= 2) {
+    visual += 6;
+    mobile += 4;
+  } else if (signals.mediaQueryCount === 0 && signals.viewport) {
+    visual -= 4;
+  }
+  if (signals.hasModernImage || signals.hasSvg) {
+    visual += 5;
+  }
+  if (signals.hasFavicon) {
+    visual += 3;
+  } else {
+    visual -= 3;
+  }
+
+  if (signals.usesGenericBuilder) {
+    visual -= 10;
+    critical.push("Ilme vaikuttaa valmisteemalta/buildersivulta — brändi ei erotu.");
+    pushFix(fixes, {
+      title: "Personoi ilme pois valmisteemasta",
+      why: "Geneerinen teema heikentää ensivaikutelmaa ja luottamusta.",
+      how: "Räätälöi typografia, värit, hero ja kortit brändillesi — älä jätä oletusulkoasua.",
+      impact: 10,
+    });
+  }
+  if (signals.usesBootstrap && !signals.hasCustomFonts) {
+    visual -= 6;
+  }
+  if (signals.usesTableLayout) {
+    visual -= 16;
+    clarity -= 8;
+    critical.push("Vanha taulukkopohjainen layout — näyttää vanhentuneelta.");
+    pushFix(fixes, {
+      title: "Uudista layout moderniksi",
+      why: "Taulukkolayoutit tuntuvat 2000-luvulta.",
+      how: "Siirry CSS Grid/Flex -rakenteeseen ja mobiili ensin -ajatteluun.",
+      impact: 12,
+    });
+  }
+  if (signals.inlineStyleCount > 40) {
+    visual -= 6;
+  }
+
   clarity = clampScore(clarity);
   mobile = clampScore(mobile);
   seo = clampScore(seo);
   trust = clampScore(trust);
   conversion = clampScore(conversion);
+  visual = clampScore(visual);
 
   var score = clampScore(
-    clarity * 0.2 + mobile * 0.15 + seo * 0.25 + trust * 0.2 + conversion * 0.2
+    clarity * 0.17 +
+      mobile * 0.12 +
+      seo * 0.2 +
+      trust * 0.15 +
+      conversion * 0.18 +
+      visual * 0.18
   );
 
   var uniqueCritical = [];
@@ -521,13 +662,14 @@ function heuristicAudit(signals) {
     scoreLabel: label.text,
     scoreTier: label.key,
     summary:
-      "Arvioimme etusivun selkeyden, mobiilin, SEO-perustan, luottamuksen ja konversion. Tämä on Sivuxin kuntoarvio — ei Google-ranking.",
+      "Arvioimme etusivun selkeyden, visuaalisen ilmeen, mobiilin, SEO-perustan, luottamuksen ja konversion. Tämä on Sivuxin kuntoarvio — ei Google-ranking.",
     critical: uniqueCritical.slice(0, 6),
     positives: positives.slice(0, 6),
     topFixes: topFixes,
     potentialGain: potentialGain,
     categories: {
       clarity: clarity,
+      visual: visual,
       mobile: mobile,
       seo: seo,
       trust: trust,
@@ -639,7 +781,7 @@ async function aiAudit(signals) {
   var prompt = {
     role: "system",
     content:
-      "Olet Sivuxin nettisivuasiantuntija. Arvioi yrityksen etusivu suomeksi. Vastaa VAIN JSONilla. Kaava: {\"score\":0-100,\"summary\":\"...\",\"critical\":[\"...\"],\"positives\":[\"...\"],\"topFixes\":[{\"title\":\"...\",\"why\":\"...\",\"how\":\"...\",\"impact\":1-20}],\"categories\":{\"clarity\":0-100,\"mobile\":0-100,\"seo\":0-100,\"trust\":0-100,\"conversion\":0-100}}. topFixes = 3 tärkeintä korjausta impact-järjestyksessä. Käytä koko 0-100-asteikkoa rehellisesti (90+ vain erinomaisille). Älä lupaa Google-sijoituksia.",
+      "Olet Sivuxin nettisivuasiantuntija. Arvioi yrityksen etusivu suomeksi — myös onko sivu kiva silmälle (visuaalinen ilme, typografia, hierarkia, modernius). Vastaa VAIN JSONilla. Kaava: {\"score\":0-100,\"summary\":\"...\",\"critical\":[\"...\"],\"positives\":[\"...\"],\"topFixes\":[{\"title\":\"...\",\"why\":\"...\",\"how\":\"...\",\"impact\":1-20}],\"categories\":{\"clarity\":0-100,\"visual\":0-100,\"mobile\":0-100,\"seo\":0-100,\"trust\":0-100,\"conversion\":0-100}}. visual = silmämääräinen/estetiikka (fontit, värit, hero, geneerinen teema). topFixes = 3 tärkeintä korjausta impact-järjestyksessä. Käytä koko 0-100-asteikkoa rehellisesti (90+ vain erinomaisille). Älä lupaa Google-sijoituksia.",
   };
   var user = {
     role: "user",
@@ -669,6 +811,19 @@ async function aiAudit(signals) {
         htmlBytes: signals.htmlBytes,
         ogImage: signals.ogImage,
         robots: signals.robots,
+        hasCustomFonts: signals.hasCustomFonts,
+        uniqueColorCount: signals.uniqueColorCount,
+        mediaQueryCount: signals.mediaQueryCount,
+        hasCssVariables: signals.hasCssVariables,
+        hasTransitions: signals.hasTransitions,
+        hasHeroMedia: signals.hasHeroMedia,
+        hasSvg: signals.hasSvg,
+        hasModernImage: signals.hasModernImage,
+        hasFavicon: signals.hasFavicon,
+        usesBootstrap: signals.usesBootstrap,
+        usesGenericBuilder: signals.usesGenericBuilder,
+        usesTableLayout: signals.usesTableLayout,
+        inlineStyleCount: signals.inlineStyleCount,
       }) +
       "\nTekstinäyte:\n" +
       signals.textSample,
@@ -741,6 +896,7 @@ async function aiAudit(signals) {
     potentialGain: potentialGain,
     categories: {
       clarity: clampScore(Number(categories.clarity) || 0),
+      visual: clampScore(Number(categories.visual) || 0),
       mobile: clampScore(Number(categories.mobile) || 0),
       seo: clampScore(Number(categories.seo) || 0),
       trust: clampScore(Number(categories.trust) || 0),
@@ -845,6 +1001,15 @@ module.exports = async function handler(req, res) {
           ai.topFixes = fallback.topFixes;
           ai.potentialGain = fallback.potentialGain;
         }
+        if (!ai.categories) ai.categories = {};
+        if (!ai.categories.visual) {
+          ai.categories.visual = fallback.categories.visual;
+        }
+        ["clarity", "mobile", "seo", "trust", "conversion"].forEach(function (key) {
+          if (!ai.categories[key] && fallback.categories[key]) {
+            ai.categories[key] = fallback.categories[key];
+          }
+        });
         result = ai;
       } else {
         aiNote = "AI-avainta ei ole asetettu — käytössä automaattinen heuristic-arvio.";

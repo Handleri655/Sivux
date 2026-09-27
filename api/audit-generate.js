@@ -140,7 +140,7 @@ async function aiCopy(signals, audit) {
           {
             role: "system",
             content:
-              'Kirjoita suomeksi konvertoiva demosivun copy JSON-muodossa: {"brandName":"","headline":"","lead":"","cta":"","services":[{"title":"","text":""}]}. 3-4 palvelua. Älä keksi valheellisia referenssejä. Pidä sävy ammattimainen.',
+              'Kirjoita suomeksi konvertoiva, premium-tuntuinen demosivun copy JSON-muodossa: {"brandName":"","headline":"","lead":"","about":"","cta":"","proof":["","",""],"services":[{"title":"","text":""}],"accent":"#73ffca","accent2":"#8af3ff","mood":""}. 3-4 palvelua. proof = 3 lyhyttä hyötyä. accent/accent2 hex-väreinä brändiin sopien (ei lila/violetti klisee). Älä keksi valheellisia referenssejä. Sävy ammattimainen ja moderni.',
           },
           {
             role: "user",
@@ -155,6 +155,8 @@ async function aiCopy(signals, audit) {
               signals.textSample +
               "\nAnalyysipisteet: " +
               (audit && audit.score) +
+              "\nIlme/visual: " +
+              (audit && audit.categories && audit.categories.visual) +
               "\nTop-korjaukset: " +
               JSON.stringify((audit && audit.topFixes) || []),
           },
@@ -253,6 +255,7 @@ module.exports = async function handler(req, res) {
       scoreLabel: String((body && body.scoreLabel) || ""),
       topFixes: Array.isArray(body.topFixes) ? body.topFixes : [],
       critical: Array.isArray(body.critical) ? body.critical : [],
+      categories: body.categories && typeof body.categories === "object" ? body.categories : {},
     };
 
     var copy = null;

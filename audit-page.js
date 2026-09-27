@@ -46,6 +46,7 @@
 
   var categoryLabels = {
     clarity: "Selkeys",
+    visual: "Ilme",
     mobile: "Mobiili",
     seo: "SEO",
     trust: "Luottamus",
@@ -380,6 +381,7 @@
           scoreLabel: latestResult.scoreLabel,
           topFixes: latestResult.topFixes || [],
           critical: latestResult.critical || [],
+          categories: latestResult.categories || {},
         }),
       });
       var data = await response.json().catch(function () {
