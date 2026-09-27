@@ -1,0 +1,865 @@
+const {
+  getEnv,
+  setCors,
+  sendJson,
+  parseBody,
+} = require("../lib/portal-auth");
+const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
+
+var rateBucket = new Map();
+var RATE_WINDOW_MS = 60 * 60 * 1000;
+var RATE_MAX = 40;
+var resultCache = new Map();
+var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+function getClientIp(req) {
+  var forwarded = req.headers["x-forwarded-for"] || req.headers["X-Forwarded-For"] || "";
+  if (forwarded) {
+    return String(forwarded).split(",")[0].trim();
+  }
+  return (
+    req.headers["x-real-ip"] ||
+    (req.socket && req.socket.remoteAddress) ||
+    "unknown"
+  );
+}
+
+function checkRateLimit(ip) {
+  var now = Date.now();
+  var entry = rateBucket.get(ip);
+  if (!entry || now - entry.start > RATE_WINDOW_MS) {
+    rateBucket.set(ip, { start: now, count: 1 });
+    return true;
+  }
+  if (entry.count >= RATE_MAX) {
+    return false;
+  }
+  entry.count += 1;
+  return true;
+}
+
+function cacheGet(key) {
+  var hit = resultCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > CACHE_TTL_MS) {
+    resultCache.delete(key);
+    return null;
+  }
+  return hit.payload;
+}
+
+function cacheSet(key, payload) {
+  resultCache.set(key, { at: Date.now(), payload: payload });
+  if (resultCache.size > 200) {
+    var oldestKey = resultCache.keys().next().value;
+    resultCache.delete(oldestKey);
+  }
+}
+
+function isPrivateHostname(hostname) {
+  var host = String(hostname || "").toLowerCase();
+  if (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "::1" ||
+    host === "0.0.0.0" ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal") ||
+    host.endsWith(".localhost")
+  ) {
+    return true;
+  }
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+    var parts = host.split(".").map(Number);
+    if (parts[0] === 10) return true;
+    if (parts[0] === 127) return true;
+    if (parts[0] === 0) return true;
+    if (parts[0] === 169 && parts[1] === 254) return true;
+    if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+    if (parts[0] === 192 && parts[1] === 168) return true;
+  }
+  return false;
+}
+
+function normalizeUrl(raw) {
+  var input = String(raw || "").trim();
+  if (!input) {
+    throw new Error("URL puuttuu");
+  }
+  if (!/^https?:\/\//i.test(input)) {
+    input = "https://" + input;
+  }
+  var url;
+  try {
+    url = new URL(input);
+  } catch (e) {
+    throw new Error("Virheellinen URL");
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error("Vain http/https-osoitteet sallitaan");
+  }
+  if (isPrivateHostname(url.hostname)) {
+    throw new Error("Tätä osoitetta ei voi analysoida");
+  }
+  url.hash = "";
+  return url.toString();
+}
+
+function stripTags(html) {
+  return String(html || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function pickMeta(html, name) {
+  var patterns = [
+    new RegExp('<meta[^>]+name=["\']' + name + '["\'][^>]+content=["\']([^"\']*)["\']', "i"),
+    new RegExp('<meta[^>]+content=["\']([^"\']*)["\'][^>]+name=["\']' + name + '["\']', "i"),
+    new RegExp('<meta[^>]+property=["\']' + name + '["\'][^>]+content=["\']([^"\']*)["\']', "i"),
+    new RegExp('<meta[^>]+content=["\']([^"\']*)["\'][^>]+property=["\']' + name + '["\']', "i"),
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var match = html.match(patterns[i]);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+  }
+  return "";
+}
+
+function countMatches(html, regex) {
+  var matches = String(html || "").match(regex);
+  return matches ? matches.length : 0;
+}
+
+function extractSignals(html, finalUrl) {
+  var parsedUrl;
+  try {
+    parsedUrl = new URL(finalUrl);
+  } catch (e) {
+    parsedUrl = null;
+  }
+  var titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  var title = titleMatch ? stripTags(titleMatch[1]).slice(0, 160) : "";
+  var description = pickMeta(html, "description").slice(0, 320);
+  var viewport = pickMeta(html, "viewport");
+  var robots = pickMeta(html, "robots");
+  var ogTitle = pickMeta(html, "og:title");
+  var ogImage = pickMeta(html, "og:image");
+  var canonicalMatch = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i);
+  var canonical = canonicalMatch ? canonicalMatch[1] : "";
+  var h1Count = countMatches(html, /<h1\b/gi);
+  var h2Count = countMatches(html, /<h2\b/gi);
+  var images = countMatches(html, /<img\b/gi);
+  var imagesWithoutAlt = countMatches(html, /<img\b(?![^>]*\balt=)[^>]*>/gi);
+  var links = countMatches(html, /<a\b/gi);
+  var hasTel = /tel:/i.test(html);
+  var hasMailto = /mailto:/i.test(html);
+  var hasForm = /<form\b/i.test(html);
+  var hasJsonLd = /application\/ld\+json/i.test(html);
+  var hasLang = /<html[^>]+lang=/i.test(html);
+  var hasHttps = parsedUrl ? parsedUrl.protocol === "https:" : false;
+  var textFull = stripTags(html);
+  var wordCount = textFull ? textFull.split(/\s+/).filter(Boolean).length : 0;
+  var ctaHints = (
+    textFull.match(
+      /\b(ota yhteytt[aä]|varaa|pyyd[aä]|soita|yhteydenotto|contact|book|get started)\b/gi
+    ) || []
+  ).length;
+  var trustHints = (
+    textFull.match(
+      /\b(y-tunnus|arvostelu|google|takuu|vuotta|asiakas|referral|review|yll[aä]pito|tuki)\b/gi
+    ) || []
+  ).length;
+  var text = textFull.slice(0, 6000);
+  var heroSlice = textFull.slice(0, 500).toLowerCase();
+  var ctaInHero = /\b(ota yhteytt|varaa|pyyd[aä]|soita|yhteydenotto|contact|book)\b/.test(heroSlice);
+
+  return {
+    url: finalUrl,
+    title: title,
+    description: description,
+    viewport: Boolean(viewport),
+    robots: robots,
+    ogTitle: Boolean(ogTitle),
+    ogImage: Boolean(ogImage),
+    canonical: Boolean(canonical),
+    h1Count: h1Count,
+    h2Count: h2Count,
+    images: images,
+    imagesWithoutAlt: imagesWithoutAlt,
+    links: links,
+    hasTel: hasTel,
+    hasMailto: hasMailto,
+    hasForm: hasForm,
+    hasJsonLd: hasJsonLd,
+    hasLang: hasLang,
+    hasHttps: hasHttps,
+    wordCount: wordCount,
+    ctaHints: ctaHints,
+    ctaInHero: ctaInHero,
+    trustHints: trustHints,
+    htmlBytes: Buffer.byteLength(html, "utf8"),
+    textSample: text.slice(0, 2500),
+  };
+}
+
+function clampScore(n) {
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function scoreLabel(score) {
+  if (score >= 90) return { key: "excellent", text: "Erinomainen — sivu on myynnillisesti ja teknisesti vahva." };
+  if (score >= 75) return { key: "good", text: "Hyvä — toimii, mutta muutama korjaus nostaisi tulosta selvästi." };
+  if (score >= 50) return { key: "ok", text: "Keskitaso — perusta on olemassa, kriittiset kohdat syövät luottamusta/konversiota." };
+  return { key: "weak", text: "Heikko — etusivu ei todennäköisesti tee myyntityötä tehokkaasti." };
+}
+
+function pushFix(fixes, item) {
+  if (!item || !item.title) return;
+  for (var i = 0; i < fixes.length; i++) {
+    if (fixes[i].title === item.title) return;
+  }
+  fixes.push(item);
+}
+
+function heuristicAudit(signals) {
+  var clarity = 62;
+  var mobile = 55;
+  var seo = 50;
+  var trust = 48;
+  var conversion = 48;
+  var critical = [];
+  var positives = [];
+  var fixes = [];
+
+  if (signals.hasHttps) {
+    trust += 8;
+    seo += 4;
+    positives.push("Sivu käyttää HTTPS-yhteyttä.");
+  } else {
+    trust -= 18;
+    seo -= 8;
+    critical.push("Sivu ei käytä HTTPS:ää.");
+    pushFix(fixes, {
+      title: "Ota HTTPS käyttöön",
+      why: "Ilman salattua yhteyttä luottamus ja SEO kärsivät.",
+      how: "Asenna SSL-sertifikaatti ja ohjaa http → https.",
+      impact: 12,
+    });
+  }
+
+  if (signals.title && signals.title.length >= 15 && signals.title.length <= 65) {
+    seo += 14;
+    positives.push("Sivulla on järkevä pituinen title.");
+  } else if (!signals.title) {
+    seo -= 20;
+    critical.push("Title-tagi puuttuu — Google ei tiedä mistä sivussa on kyse.");
+    pushFix(fixes, {
+      title: "Lisää selkeä title-tagi",
+      why: "Title on hakutuloksen tärkein teksti.",
+      how: "Kirjoita 30–60 merkin title: palvelu + paikkakunta/hyöty + brändi.",
+      impact: 10,
+    });
+  } else {
+    seo -= 8;
+    critical.push("Title on liian lyhyt tai pitkä (ihanne ~30–60 merkkiä).");
+    pushFix(fixes, {
+      title: "Säädä title-tagin pituus",
+      why: "Liian lyhyt/pitkä title heikentää klikkauksia.",
+      how: "Pidä title noin 30–60 merkissä ja sisällytä pääavainsana.",
+      impact: 6,
+    });
+  }
+
+  if (signals.description && signals.description.length >= 70) {
+    seo += 12;
+    positives.push("Meta-kuvaus on riittävän informatiivinen.");
+  } else if (signals.description && signals.description.length >= 40) {
+    seo += 6;
+  } else {
+    seo -= 14;
+    critical.push("Meta-kuvaus puuttuu tai on liian lyhyt — heikentää klikkauksia hakutuloksissa.");
+    pushFix(fixes, {
+      title: "Kirjoita myyvä meta-kuvaus",
+      why: "Meta vaikuttaa CTR:ään hakutuloksissa.",
+      how: "Lisää 120–155 merkin kuvaus: ongelma → ratkaisu → CTA.",
+      impact: 8,
+    });
+  }
+
+  if (signals.h1Count === 1) {
+    clarity += 14;
+    seo += 10;
+    positives.push("Yksi selkeä H1-otsikko.");
+  } else if (signals.h1Count === 0) {
+    clarity -= 18;
+    seo -= 14;
+    critical.push("H1-otsikko puuttuu — sivun pääviesti ei erotu.");
+    pushFix(fixes, {
+      title: "Lisää yksi vahva H1",
+      why: "Ilman H1:tä kävijä ja hakukone eivät nappaa pääviestiä.",
+      how: "Laita heroan yksi H1, joka kertoo mitä myytte kenelle.",
+      impact: 10,
+    });
+  } else {
+    clarity -= 10;
+    seo -= 8;
+    critical.push("Useita H1-otsikoita — hierarkia on sekava.");
+    pushFix(fixes, {
+      title: "Korjaa otsikkohierarkia (vain 1× H1)",
+      why: "Usea H1 sekoittaa sivun rakenteen.",
+      how: "Jätä yksi H1 ja muuta loput H2/H3-tasolle.",
+      impact: 7,
+    });
+  }
+
+  if (signals.h2Count >= 2) {
+    clarity += 8;
+  } else if (signals.h2Count === 0) {
+    clarity -= 6;
+  }
+
+  if (signals.viewport) {
+    mobile += 30;
+    positives.push("Mobiili-viewport on asetettu.");
+  } else {
+    mobile -= 25;
+    critical.push("Viewport-meta puuttuu — sivu ei todennäköisesti skaalaudu hyvin mobiilissa.");
+    pushFix(fixes, {
+      title: "Lisää viewport-meta",
+      why: "Ilman sitä mobiilinäkymä rikkoontuu helposti.",
+      how: 'Lisää <meta name="viewport" content="width=device-width, initial-scale=1">.',
+      impact: 12,
+    });
+  }
+
+  if (signals.wordCount < 80) {
+    clarity -= 16;
+    conversion -= 10;
+    critical.push("Sisältöä on hyvin vähän — kävijä ei ymmärrä tarjousta nopeasti.");
+    pushFix(fixes, {
+      title: "Lisää selkeää sisältöä etusivulle",
+      why: "Liian lyhyt sivu ei kerro palvelua, hintaa tai seuraavaa askelta.",
+      how: "Kirjoita hero + 3 hyötyä + palvelut + CTA vähintään ~150 sanaan.",
+      impact: 9,
+    });
+  } else if (signals.wordCount > 150) {
+    clarity += 10;
+  } else {
+    clarity += 5;
+  }
+
+  if (signals.ctaInHero || signals.ctaHints >= 3 || (signals.hasForm && signals.ctaHints >= 1)) {
+    conversion += 28;
+    positives.push("Yhteydenottoon ohjaavia elementtejä löytyy.");
+  } else if (signals.ctaHints >= 1 || signals.hasForm || signals.hasTel) {
+    conversion += 16;
+  } else {
+    conversion -= 18;
+    critical.push("Selkeä CTA puuttuu (esim. Ota yhteyttä / Varaa aika / Soita).");
+    pushFix(fixes, {
+      title: "Lisää selkeä CTA heroan",
+      why: "Ilman toimintakehotetta kävijä ei tiedä mitä tehdä seuraavaksi.",
+      how: "Laita heroan yksi pää-CTA (Ota yhteyttä / Varaa aika) + puhelin.",
+      impact: 14,
+    });
+  }
+
+  if (!signals.ctaInHero && (signals.ctaHints >= 1 || signals.hasForm)) {
+    pushFix(fixes, {
+      title: "Siirrä CTA ylemmäs (hero)",
+      why: "CTA vain sivun lopussa menetetään osan kävijöistä.",
+      how: "Toista sama CTA heti herossa ja uudelleen ennen footeria.",
+      impact: 6,
+    });
+  }
+
+  if (signals.hasForm) {
+    conversion += 8;
+    positives.push("Yhteydenottolomake löytyy.");
+  }
+
+  if (signals.hasTel || signals.hasMailto) {
+    trust += 14;
+    conversion += 6;
+  } else {
+    trust -= 10;
+    critical.push("Puhelin- tai sähköpostilinkkiä ei löydy helposti.");
+    pushFix(fixes, {
+      title: "Näytä puhelin ja sähköposti",
+      why: "Helppo yhteydenotto rakentaa luottamusta ja konversiota.",
+      how: "Lisää klikattavat tel: ja mailto:-linkit headeriin tai footeriin.",
+      impact: 8,
+    });
+  }
+
+  if (signals.trustHints >= 3) {
+    trust += 22;
+    positives.push("Luottamussignaaleja (Y-tunnus, tuki, arvostelut) on näkyvissä.");
+  } else if (signals.trustHints >= 1) {
+    trust += 10;
+  } else {
+    trust -= 10;
+    critical.push("Luottamussignaalit ovat heikot (arvostelut, Y-tunnus, referenssit).");
+    pushFix(fixes, {
+      title: "Lisää luottamussignaalit",
+      why: "Ilman Y-tunnusta/arvosteluja uusi kävijä epäröi.",
+      how: "Lisää Y-tunnus, lyhyt palauteosio ja ylläpito-/takuulupaus.",
+      impact: 11,
+    });
+  }
+
+  if (signals.imagesWithoutAlt > 0 && signals.images > 0) {
+    seo -= 6;
+    critical.push("Osassa kuvista puuttuu alt-teksti — heikentää saavutettavuutta ja SEO:ta.");
+    pushFix(fixes, {
+      title: "Lisää alt-tekstit kuviin",
+      why: "Puuttuvat altit heikentävät saavutettavuutta ja kuva-SEO:ta.",
+      how: "Kirjoita kuvaava alt jokaiselle sisältökuvalle (logo voi olla koristeellinen).",
+      impact: 4,
+    });
+  } else if (signals.images > 0) {
+    seo += 4;
+  }
+
+  if (signals.ogImage) {
+    seo += 6;
+    positives.push("Open Graph -kuva on määritelty.");
+  } else {
+    seo -= 4;
+    pushFix(fixes, {
+      title: "Lisää Open Graph -kuva",
+      why: "Somessa jaettu linkki näyttää ammattimaisemmalta.",
+      how: "Aseta og:image (esim. 1200×630) ja og:title.",
+      impact: 3,
+    });
+  }
+
+  if (signals.canonical) {
+    seo += 6;
+    positives.push("Canonical-osoite on määritelty.");
+  } else {
+    seo -= 3;
+  }
+
+  if (signals.hasJsonLd) {
+    seo += 8;
+    trust += 4;
+    positives.push("Strukturoidut tiedot (JSON-LD) löytyvät.");
+  } else {
+    pushFix(fixes, {
+      title: "Lisää JSON-LD-schema",
+      why: "Schema auttaa hakukoneita ymmärtämään yritystä.",
+      how: "Lisää Organization/LocalBusiness + WebPage -merkintä.",
+      impact: 5,
+    });
+  }
+
+  if (signals.hasLang) {
+    seo += 4;
+  } else {
+    seo -= 5;
+    critical.push("HTML-lang-attribuutti puuttuu.");
+    pushFix(fixes, {
+      title: "Aseta html lang",
+      why: "Kielitieto auttaa saavutettavuutta ja SEO:ta.",
+      how: 'Käytä <html lang="fi">.',
+      impact: 3,
+    });
+  }
+
+  if (signals.htmlBytes > 900000) {
+    mobile -= 12;
+    critical.push("Sivu on raskas (suuri HTML) — voi hidastaa latausta.");
+    pushFix(fixes, {
+      title: "Kevytä sivun latausta",
+      why: "Raskas sivu heikentää mobiilikokemusta ja konversiota.",
+      how: "Pienennä kuvia, poista turha markup ja lykkaa ei-kriittiset scriptit.",
+      impact: 7,
+    });
+  } else if (signals.htmlBytes < 250000) {
+    mobile += 10;
+  } else {
+    mobile += 5;
+  }
+
+  clarity = clampScore(clarity);
+  mobile = clampScore(mobile);
+  seo = clampScore(seo);
+  trust = clampScore(trust);
+  conversion = clampScore(conversion);
+
+  var score = clampScore(
+    clarity * 0.2 + mobile * 0.15 + seo * 0.25 + trust * 0.2 + conversion * 0.2
+  );
+
+  var uniqueCritical = [];
+  critical.forEach(function (item) {
+    if (uniqueCritical.indexOf(item) === -1) uniqueCritical.push(item);
+  });
+
+  fixes.sort(function (a, b) {
+    return (b.impact || 0) - (a.impact || 0);
+  });
+  var topFixes = fixes.slice(0, 3);
+  var potentialGain = Math.min(
+    100 - score,
+    topFixes.reduce(function (sum, f) {
+      return sum + (f.impact || 0);
+    }, 0)
+  );
+
+  var label = scoreLabel(score);
+  return {
+    score: score,
+    scoreLabel: label.text,
+    scoreTier: label.key,
+    summary:
+      "Arvioimme etusivun selkeyden, mobiilin, SEO-perustan, luottamuksen ja konversion. Tämä on Sivuxin kuntoarvio — ei Google-ranking.",
+    critical: uniqueCritical.slice(0, 6),
+    positives: positives.slice(0, 6),
+    topFixes: topFixes,
+    potentialGain: potentialGain,
+    categories: {
+      clarity: clarity,
+      mobile: mobile,
+      seo: seo,
+      trust: trust,
+      conversion: conversion,
+    },
+    engine: "heuristic",
+  };
+}
+
+async function fetchPage(url) {
+  var controller = new AbortController();
+  var timer = setTimeout(function () {
+    controller.abort();
+  }, 12000);
+
+  try {
+    var response = await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+      signal: controller.signal,
+      headers: {
+        "User-Agent":
+          "SivuxSiteAudit/1.0 (+https://sivux.fi/sivustoanalyysi.html; contact info@sivux.fi)",
+        Accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+      },
+    });
+
+    var finalUrl = response.url || url;
+    try {
+      var finalParsed = new URL(finalUrl);
+      if (isPrivateHostname(finalParsed.hostname)) {
+        throw new Error("Uudelleenohjaus estettyyn osoitteeseen");
+      }
+    } catch (e) {
+      if (e.message === "Uudelleenohjaus estettyyn osoitteeseen") throw e;
+    }
+
+    if (!response.ok) {
+      throw new Error("Sivua ei saatu ladattua (HTTP " + response.status + ")");
+    }
+
+    var contentType = String(response.headers.get("content-type") || "");
+    if (contentType && !/text\/html|application\/xhtml/i.test(contentType)) {
+      throw new Error("Osoite ei näytä HTML-sivulta");
+    }
+
+    var buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.length > 1200000) buffer = buffer.subarray(0, 1200000);
+    return { html: buffer.toString("utf8"), finalUrl: finalUrl };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function safeParseJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    var match = String(text || "").match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    try {
+      return JSON.parse(match[0]);
+    } catch (e2) {
+      return null;
+    }
+  }
+}
+
+function normalizeTopFixes(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .map(function (item) {
+      if (!item || typeof item !== "object") return null;
+      return {
+        title: String(item.title || "").slice(0, 120),
+        why: String(item.why || "").slice(0, 220),
+        how: String(item.how || "").slice(0, 220),
+        impact: clampScore(Number(item.impact) || 5),
+      };
+    })
+    .filter(function (item) {
+      return item && item.title;
+    })
+    .slice(0, 3);
+}
+
+async function aiAudit(signals) {
+  var apiKey = getEnv("OPENAI_API_KEY", "");
+  if (!apiKey) return null;
+
+  var model = getEnv("OPENAI_MODEL", "gpt-4o-mini");
+  var prompt = {
+    role: "system",
+    content:
+      "Olet Sivuxin nettisivuasiantuntija. Arvioi yrityksen etusivu suomeksi. Vastaa VAIN JSONilla. Kaava: {\"score\":0-100,\"summary\":\"...\",\"critical\":[\"...\"],\"positives\":[\"...\"],\"topFixes\":[{\"title\":\"...\",\"why\":\"...\",\"how\":\"...\",\"impact\":1-20}],\"categories\":{\"clarity\":0-100,\"mobile\":0-100,\"seo\":0-100,\"trust\":0-100,\"conversion\":0-100}}. topFixes = 3 tärkeintä korjausta impact-järjestyksessä. Käytä koko 0-100-asteikkoa rehellisesti (90+ vain erinomaisille). Älä lupaa Google-sijoituksia.",
+  };
+  var user = {
+    role: "user",
+    content:
+      "Analysoi tämä etusivu.\nURL: " +
+      signals.url +
+      "\nSignaalit: " +
+      JSON.stringify({
+        title: signals.title,
+        description: signals.description,
+        viewport: signals.viewport,
+        hasHttps: signals.hasHttps,
+        h1Count: signals.h1Count,
+        h2Count: signals.h2Count,
+        images: signals.images,
+        imagesWithoutAlt: signals.imagesWithoutAlt,
+        hasTel: signals.hasTel,
+        hasMailto: signals.hasMailto,
+        hasForm: signals.hasForm,
+        hasJsonLd: signals.hasJsonLd,
+        hasLang: signals.hasLang,
+        canonical: signals.canonical,
+        wordCount: signals.wordCount,
+        ctaHints: signals.ctaHints,
+        ctaInHero: signals.ctaInHero,
+        trustHints: signals.trustHints,
+        htmlBytes: signals.htmlBytes,
+        ogImage: signals.ogImage,
+        robots: signals.robots,
+      }) +
+      "\nTekstinäyte:\n" +
+      signals.textSample,
+  };
+
+  var response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: model,
+      temperature: 0.3,
+      response_format: { type: "json_object" },
+      messages: [prompt, user],
+    }),
+  });
+
+  var payload = await response.json().catch(function () {
+    return {};
+  });
+  if (!response.ok) {
+    var msg =
+      (payload && payload.error && payload.error.message) ||
+      "OpenAI-pyyntö epäonnistui";
+    var err = new Error(msg);
+    err.status = response.status;
+    throw err;
+  }
+
+  var content =
+    payload &&
+    payload.choices &&
+    payload.choices[0] &&
+    payload.choices[0].message &&
+    payload.choices[0].message.content;
+  var parsed = safeParseJson(content);
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("AI-vastaus ei ollut kelvollista JSONia");
+  }
+
+  var categories = parsed.categories || {};
+  var score = clampScore(Number(parsed.score) || 0);
+  var topFixes = normalizeTopFixes(parsed.topFixes);
+  var label = scoreLabel(score);
+  var potentialGain = Math.min(
+    100 - score,
+    topFixes.reduce(function (sum, f) {
+      return sum + (f.impact || 0);
+    }, 0)
+  );
+
+  return {
+    score: score,
+    scoreLabel: label.text,
+    scoreTier: label.key,
+    summary: String(parsed.summary || "").slice(0, 600),
+    critical: Array.isArray(parsed.critical)
+      ? parsed.critical.map(function (x) {
+          return String(x);
+        }).slice(0, 6)
+      : [],
+    positives: Array.isArray(parsed.positives)
+      ? parsed.positives.map(function (x) {
+          return String(x);
+        }).slice(0, 6)
+      : [],
+    topFixes: topFixes,
+    potentialGain: potentialGain,
+    categories: {
+      clarity: clampScore(Number(categories.clarity) || 0),
+      mobile: clampScore(Number(categories.mobile) || 0),
+      seo: clampScore(Number(categories.seo) || 0),
+      trust: clampScore(Number(categories.trust) || 0),
+      conversion: clampScore(Number(categories.conversion) || 0),
+    },
+    engine: "openai",
+  };
+}
+
+module.exports = async function handler(req, res) {
+  setCors(res);
+
+  if (req.method === "OPTIONS") {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
+
+  if (req.method !== "POST") {
+    sendJson(res, 405, { error: "Method not allowed" });
+    return;
+  }
+
+  var ip = getClientIp(req);
+  if (!checkRateLimit(ip)) {
+    sendJson(res, 429, {
+      error: "Liian monta analyysia. Kokeile uudelleen myöhemmin.",
+    });
+    return;
+  }
+
+  var body;
+  try {
+    body = await parseBody(req);
+  } catch (e) {
+    sendJson(res, 400, { error: "Invalid JSON body" });
+    return;
+  }
+
+  if (body && body.website) {
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  var email = normalizeEmail(body && body.email);
+  if (!email) {
+    sendJson(res, 400, {
+      error: "Sähköposti vaaditaan ennen ilmaista arviota",
+    });
+    return;
+  }
+
+  var targetUrl;
+  try {
+    targetUrl = normalizeUrl(body && body.url);
+  } catch (e) {
+    sendJson(res, 400, { error: e.message || "Virheellinen URL" });
+    return;
+  }
+
+  async function finishWithLead(payload) {
+    try {
+      await captureAuditLead({
+        email: email,
+        url: payload.url || targetUrl,
+        requestedUrl: targetUrl,
+        score: payload.score,
+        scoreLabel: payload.scoreLabel,
+        engine: payload.engine,
+        ip: ip,
+        analyzedAt: payload.analyzedAt,
+      });
+    } catch (leadErr) {
+      console.error("audit lead capture failed:", leadErr && leadErr.message ? leadErr.message : leadErr);
+    }
+    sendJson(
+      res,
+      200,
+      Object.assign({}, payload, {
+        leadCaptured: true,
+      })
+    );
+  }
+
+  var cached = cacheGet(targetUrl);
+  if (cached) {
+    await finishWithLead(Object.assign({}, cached, { cached: true }));
+    return;
+  }
+
+  try {
+    var page = await fetchPage(targetUrl);
+    var signals = extractSignals(page.html, page.finalUrl);
+    var fallback = heuristicAudit(signals);
+    var result = fallback;
+    var aiNote = null;
+
+    try {
+      var ai = await aiAudit(signals);
+      if (ai) {
+        if (!ai.topFixes || !ai.topFixes.length) {
+          ai.topFixes = fallback.topFixes;
+          ai.potentialGain = fallback.potentialGain;
+        }
+        result = ai;
+      } else {
+        aiNote = "AI-avainta ei ole asetettu — käytössä automaattinen heuristic-arvio.";
+      }
+    } catch (aiError) {
+      aiNote = "AI-arvio epäonnistui, käytössä automaattinen heuristic-arvio.";
+      console.error("audit ai error:", aiError && aiError.message ? aiError.message : aiError);
+    }
+
+    var payload = {
+      url: signals.url,
+      requestedUrl: targetUrl,
+      score: result.score,
+      scoreLabel: result.scoreLabel,
+      scoreTier: result.scoreTier,
+      summary: result.summary,
+      critical: result.critical,
+      positives: result.positives || [],
+      topFixes: result.topFixes || [],
+      potentialGain: result.potentialGain || 0,
+      categories: result.categories,
+      engine: result.engine,
+      note: aiNote,
+      analyzedAt: new Date().toISOString(),
+      cached: false,
+    };
+    cacheSet(targetUrl, payload);
+    await finishWithLead(payload);
+  } catch (e) {
+    sendJson(res, e.status || 502, {
+      error: e.message || "Analyysi epäonnistui",
+      hint: "Tarkista URL ja että sivu on julkisesti saatavilla.",
+    });
+  }
+};

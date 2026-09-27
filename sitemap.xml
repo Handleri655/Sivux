@@ -27,6 +27,14 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://sivux.fi/sivustoanalyysi.html</loc>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://sivux.fi/sivustoanalyysi.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sivux.fi/sivustoanalyysi.html" />
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://sivux.fi/en.html</loc>
     <xhtml:link rel="alternate" hreflang="fi" href="https://sivux.fi/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://sivux.fi/en.html" />

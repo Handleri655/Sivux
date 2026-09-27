@@ -43,6 +43,9 @@ loadEnvFile(path.join(ROOT, ".env"));
 
 const loginHandler = require("./api/login");
 const metricsHandler = require("./api/metrics");
+const auditHandler = require("./api/audit");
+const auditQuoteHandler = require("./api/audit-quote");
+const auditGenerateHandler = require("./api/audit-generate");
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -125,6 +128,18 @@ const server = http.createServer(async function (req, res) {
       await metricsHandler(req, res);
       return;
     }
+    if (pathname === "/api/audit") {
+      await auditHandler(req, res);
+      return;
+    }
+    if (pathname === "/api/audit-quote") {
+      await auditQuoteHandler(req, res);
+      return;
+    }
+    if (pathname === "/api/audit-generate") {
+      await auditGenerateHandler(req, res);
+      return;
+    }
 
     serveStatic(req, res, pathname === "/" ? "/index.html" : pathname);
   } catch (error) {
@@ -138,7 +153,11 @@ const server = http.createServer(async function (req, res) {
 server.listen(PORT, function () {
   console.log("Sivux local server: http://localhost:" + PORT);
   console.log("Asiakasportaali:    http://localhost:" + PORT + "/asiakas");
+  console.log("Sivustoanalyysi:    http://localhost:" + PORT + "/sivustoanalyysi.html");
   if (!process.env.AUTH_SECRET) {
     console.log("Note: AUTH_SECRET not set — create .env from .env.example for login/API.");
+  }
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("Note: OPENAI_API_KEY not set — audit uses heuristic scoring only.");
   }
 });

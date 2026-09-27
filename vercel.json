@@ -2,5 +2,10 @@
   "rewrites": [
     { "source": "/asiakas", "destination": "/asiakas/index.html" },
     { "source": "/asiakas/dashboard", "destination": "/asiakas/dashboard.html" }
-  ]
+  ],
+  "functions": {
+    "api/audit.js": { "maxDuration": 30 },
+    "api/audit-quote.js": { "maxDuration": 20 },
+    "api/audit-generate.js": { "maxDuration": 60 }
+  }
 }

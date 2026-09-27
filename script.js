@@ -371,7 +371,7 @@
           {
             keys: ["yllapito", "tuki", "bugi", "virhe", "turva"],
             answer:
-              "Tarjoamme ylläpitoa, tietoturvapäivityksiä, varmuuskopioita ja teknistä tukea. Ylläpidon laajuus sovitaan tarpeesi mukaan.",
+              "Lupaamme jatkuvan tuen ja ylläpidon nettisivuillesi: päivitykset, tietoturva, varmuuskopiot ja tekninen tuki. Laajuus sovitaan tarpeesi mukaan.",
           },
           {
             keys: ["kieli", "english", "englanti", "fi", "en"],
@@ -710,6 +710,31 @@
           page_lang: document.documentElement.lang || "fi",
         });
       });
+
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var auditUrl = params.get("audit");
+          var auditScore = params.get("score");
+          var auditEmail = params.get("email");
+          if (auditUrl) {
+            var messageField = form.querySelector('textarea[name="message"]');
+            if (messageField && !messageField.value) {
+              messageField.value =
+                "Hei! Tein sivustoanalyysin osoitteelle " +
+                auditUrl +
+                (auditScore ? " (pisteet " + auditScore + "/100)" : "") +
+                ". Haluaisin tarjouksen korjauksista.";
+            }
+          }
+          if (auditEmail) {
+            var emailField = form.querySelector('input[name="email"]');
+            if (emailField && !emailField.value) {
+              emailField.value = auditEmail;
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
     });
   }
 
