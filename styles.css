@@ -2107,27 +2107,65 @@ html.js-reveal [data-reveal-group].is-revealed > *:nth-child(4) { transition-del
 }
 
 .audit-score-ring {
-  width: 7.5rem;
-  height: 7.5rem;
+  --score-accent: rgba(138, 243, 255, 0.95);
+  position: relative;
+  width: 8.5rem;
+  height: 8.5rem;
   border-radius: 50%;
   display: grid;
-  place-content: center;
-  text-align: center;
-  border: 3px solid rgba(138, 243, 255, 0.35);
-  background: radial-gradient(circle at 30% 25%, rgba(115, 255, 202, 0.16), transparent 55%),
+  place-items: center;
+  background: radial-gradient(circle at 30% 25%, rgba(115, 255, 202, 0.12), transparent 55%),
     rgba(7, 8, 12, 0.7);
+  border: 1px solid rgba(138, 243, 255, 0.12);
 }
 
 .audit-score-ring[data-tone="good"] {
-  border-color: rgba(115, 255, 202, 0.7);
+  --score-accent: rgba(115, 255, 202, 0.95);
 }
 
 .audit-score-ring[data-tone="mid"] {
-  border-color: rgba(255, 214, 102, 0.7);
+  --score-accent: rgba(255, 214, 102, 0.95);
 }
 
 .audit-score-ring[data-tone="low"] {
-  border-color: rgba(255, 120, 120, 0.7);
+  --score-accent: rgba(255, 120, 120, 0.95);
+}
+
+.audit-score-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.audit-score-track,
+.audit-score-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.audit-score-track {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-dasharray: none;
+}
+
+.audit-score-progress {
+  stroke: var(--score-accent);
+  stroke-dasharray: 327;
+  stroke-dashoffset: 327;
+  transition: none;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--score-accent) 45%, transparent));
+}
+
+.audit-score-center {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  line-height: 1;
 }
 
 .audit-score-value {
@@ -2407,8 +2445,12 @@ html.js-reveal [data-reveal-group].is-revealed > *:nth-child(4) { transition-del
 .audit-category-bar span {
   display: block;
   height: 100%;
+  width: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--accent), var(--accent-3));
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
 }
 
 .audit-topfixes {

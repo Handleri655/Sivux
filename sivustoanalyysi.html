@@ -249,9 +249,22 @@
 
           <div class="audit-result is-hidden" id="audit-result" hidden>
             <div class="audit-score-wrap">
-              <div class="audit-score-ring" id="audit-score-ring" aria-hidden="true">
-                <span class="audit-score-value" id="audit-score-value">0</span>
-                <span class="audit-score-max">/100</span>
+              <div class="audit-score-ring" id="audit-score-ring" role="img" aria-label="Sivuston arvosana">
+                <svg class="audit-score-svg" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="audit-score-track" cx="60" cy="60" r="52" />
+                  <circle
+                    class="audit-score-progress"
+                    id="audit-score-progress"
+                    cx="60"
+                    cy="60"
+                    r="52"
+                    transform="rotate(-90 60 60)"
+                  />
+                </svg>
+                <div class="audit-score-center">
+                  <span class="audit-score-value" id="audit-score-value">0</span>
+                  <span class="audit-score-max">/100</span>
+                </div>
               </div>
               <div class="audit-score-copy">
                 <p class="audit-result-kicker" id="audit-url-label"></p>

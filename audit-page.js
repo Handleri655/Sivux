@@ -17,7 +17,10 @@
   var resultEl = document.getElementById("audit-result");
   var scoreValue = document.getElementById("audit-score-value");
   var scoreRing = document.getElementById("audit-score-ring");
+  var scoreProgress = document.getElementById("audit-score-progress");
   var scoreLabelEl = document.getElementById("audit-score-label");
+  var scoreAnimControls = null;
+  var scoreCountControls = null;
   var summaryEl = document.getElementById("audit-summary");
   var urlLabel = document.getElementById("audit-url-label");
   var noteEl = document.getElementById("audit-note");
@@ -62,6 +65,141 @@
     if (score >= 75) return "good";
     if (score >= 50) return "mid";
     return "low";
+  }
+
+  function prefersReducedMotion() {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getMotionAnimate() {
+    if (prefersReducedMotion()) return null;
+    if (!window.Motion || typeof window.Motion.animate !== "function") return null;
+    return window.Motion.animate;
+  }
+
+  function stopScoreAnimations() {
+    if (scoreAnimControls && typeof scoreAnimControls.stop === "function") {
+      scoreAnimControls.stop();
+    }
+    if (scoreCountControls && typeof scoreCountControls.stop === "function") {
+      scoreCountControls.stop();
+    }
+    if (scoreAnimControls && scoreAnimControls.raf) {
+      cancelAnimationFrame(scoreAnimControls.raf);
+    }
+    if (scoreCountControls && scoreCountControls.raf) {
+      cancelAnimationFrame(scoreCountControls.raf);
+    }
+    scoreAnimControls = null;
+    scoreCountControls = null;
+  }
+
+  function tweenNumber(from, to, durationMs, onUpdate, onComplete) {
+    var reduced = prefersReducedMotion();
+    if (reduced || durationMs <= 0) {
+      onUpdate(to);
+      if (onComplete) onComplete();
+      return { stop: function () {} };
+    }
+
+    var animate = getMotionAnimate();
+    if (animate) {
+      try {
+        var controls = animate(from, to, {
+          duration: durationMs / 1000,
+          ease: [0.22, 1, 0.36, 1],
+          onUpdate: onUpdate,
+          onComplete: onComplete,
+        });
+        if (controls && typeof controls.stop === "function") {
+          return controls;
+        }
+      } catch (e) {
+        // fall through to rAF
+      }
+    }
+
+    var start = performance.now();
+    var frame = 0;
+    var stopped = false;
+    function tick(now) {
+      if (stopped) return;
+      var t = Math.min(1, (now - start) / durationMs);
+      // easeOut cubic-ish
+      var eased = 1 - Math.pow(1 - t, 3);
+      onUpdate(from + (to - from) * eased);
+      if (t < 1) {
+        frame = requestAnimationFrame(tick);
+      } else if (onComplete) {
+        onComplete();
+      }
+    }
+    frame = requestAnimationFrame(tick);
+    return {
+      raf: frame,
+      stop: function () {
+        stopped = true;
+        cancelAnimationFrame(frame);
+      },
+    };
+  }
+
+  function animateScoreRing(score) {
+    var clamped = Math.max(0, Math.min(100, Number(score) || 0));
+    var progress = clamped / 100;
+    scoreRing.setAttribute("data-tone", scoreTone(clamped));
+    scoreRing.setAttribute("aria-label", "Sivuston arvosana " + clamped + " / 100");
+
+    stopScoreAnimations();
+
+    if (!scoreProgress) {
+      scoreValue.textContent = String(clamped);
+      return;
+    }
+
+    var radius = Number(scoreProgress.getAttribute("r")) || 52;
+    var circumference = 2 * Math.PI * radius;
+    var endOffset = circumference * (1 - progress);
+
+    scoreProgress.style.strokeDasharray = String(circumference);
+    scoreProgress.style.strokeDashoffset = String(circumference);
+
+    scoreAnimControls = tweenNumber(circumference, endOffset, 1150, function (latest) {
+      scoreProgress.style.strokeDashoffset = String(latest);
+    });
+
+    scoreValue.textContent = "0";
+    scoreCountControls = tweenNumber(0, clamped, 1150, function (latest) {
+      scoreValue.textContent = String(Math.round(latest));
+    });
+  }
+
+  function animateCategoryBars() {
+    if (!categoriesEl) return;
+    var fills = categoriesEl.querySelectorAll(".audit-category-bar span");
+    var animate = getMotionAnimate();
+    Array.prototype.forEach.call(fills, function (fill, index) {
+      var target = Number(fill.getAttribute("data-target") || 0);
+      var ratio = Math.max(0, Math.min(1, target / 100));
+      if (!animate) {
+        fill.style.transform = "scaleX(" + ratio + ")";
+        return;
+      }
+      fill.style.transform = "scaleX(0)";
+      animate(
+        fill,
+        { scaleX: [0, ratio] },
+        {
+          duration: 0.85,
+          delay: 0.12 + index * 0.06,
+          ease: [0.22, 1, 0.36, 1],
+        }
+      );
+    });
   }
 
   function showEmailGate(url) {
@@ -134,17 +272,22 @@
     categoriesEl.innerHTML = "";
     Object.keys(categoryLabels).forEach(function (key) {
       var value = categories && typeof categories[key] === "number" ? categories[key] : 0;
+      var clamped = Math.max(0, Math.min(100, value));
       var card = document.createElement("div");
       card.className = "audit-category";
       card.innerHTML =
         '<p class="audit-category-label">' +
         categoryLabels[key] +
         '</p><p class="audit-category-value">' +
-        value +
-        '</p><div class="audit-category-bar" aria-hidden="true"><span style="width:' +
-        Math.max(0, Math.min(100, value)) +
-        '%"></span></div>';
+        clamped +
+        '</p><div class="audit-category-bar" aria-hidden="true"><span data-target="' +
+        clamped +
+        '"></span></div>';
       categoriesEl.appendChild(card);
+    });
+    // Start bars empty; Motion fills them after paint.
+    requestAnimationFrame(function () {
+      animateCategoryBars();
     });
   }
 
@@ -343,8 +486,7 @@
     resultEl.hidden = false;
     resultEl.classList.remove("is-hidden");
     var score = Number(data.score) || 0;
-    scoreValue.textContent = String(score);
-    scoreRing.setAttribute("data-tone", scoreTone(score));
+    animateScoreRing(score);
     urlLabel.textContent = data.url || "";
     scoreLabelEl.textContent = data.scoreLabel || "";
     summaryEl.textContent = data.summary || "";
