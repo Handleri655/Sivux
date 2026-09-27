@@ -270,7 +270,12 @@
       }
     } catch (error) {
       if (quoteStatusEl) {
-        quoteStatusEl.textContent = error.message || "Demosivun luonti epäonnistui";
+        var msg = error.message || "Demosivun luonti epäonnistui";
+        if (/aborted|abort/i.test(msg)) {
+          msg =
+            "Operaatio keskeytyi aikakatkaisuun. Kokeile uudelleen — demosivun luonti voi kestää hetken.";
+        }
+        quoteStatusEl.textContent = msg;
         quoteStatusEl.classList.add("is-error");
       }
       if (generateCta) {
@@ -396,7 +401,11 @@
       showResult(data, email);
     } catch (error) {
       showProgress(false);
-      setStatus(error.message || "Analyysi epäonnistui", true);
+      var msg = error.message || "Analyysi epäonnistui";
+      if (/aborted|abort/i.test(msg)) {
+        msg = "Sivun lataus kesti liian kauan. Kokeile uudelleen tai toista URL:ia.";
+      }
+      setStatus(msg, true);
     } finally {
       if (submitBtn) submitBtn.disabled = false;
       if (emailContinueBtn) {

@@ -8,7 +8,7 @@ const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
 const { buildPreviewHtml, pickBrandName } = require("../lib/preview-generator");
 const { deployPreviewSite } = require("../lib/vercel-deploy");
 const { sendPreviewEmail } = require("../lib/preview-email");
-const { claimPreviewEmail, updatePreviewClaim } = require("../lib/preview-quota");
+const { claimPreviewEmail, isPreviewEmailUsed, updatePreviewClaim } = require("../lib/preview-quota");
 
 function isPrivateHostname(hostname) {
   var host = String(hostname || "").toLowerCase();
@@ -67,11 +67,17 @@ function pickMeta(html, name) {
   return m ? m[1].trim() : "";
 }
 
+function isAbortError(err) {
+  if (!err) return false;
+  if (err.name === "AbortError") return true;
+  return /aborted|abort/i.test(String(err.message || ""));
+}
+
 async function fetchSignals(targetUrl) {
   var controller = new AbortController();
   var timer = setTimeout(function () {
     controller.abort();
-  }, 12000);
+  }, 18000);
   try {
     var response = await fetch(targetUrl, {
       redirect: "follow",
@@ -96,6 +102,15 @@ async function fetchSignals(targetUrl) {
       hasTel: /tel:/i.test(html),
       hasMailto: /mailto:/i.test(html),
     };
+  } catch (e) {
+    if (isAbortError(e)) {
+      var timeoutErr = new Error(
+        "Sivun lataus kesti liian kauan demoa varten. Kokeile uudelleen."
+      );
+      timeoutErr.status = 504;
+      throw timeoutErr;
+    }
+    throw e;
   } finally {
     clearTimeout(timer);
   }
@@ -105,54 +120,66 @@ async function aiCopy(signals, audit) {
   var apiKey = getEnv("OPENAI_API_KEY", "");
   if (!apiKey) return null;
   var model = getEnv("OPENAI_MODEL", "gpt-4o-mini");
-  var response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + apiKey,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: model,
-      temperature: 0.4,
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            'Kirjoita suomeksi konvertoiva demosivun copy JSON-muodossa: {"brandName":"","headline":"","lead":"","cta":"","services":[{"title":"","text":""}]}. 3-4 palvelua. Älä keksi valheellisia referenssejä. Pidä sävy ammattimainen.',
-        },
-        {
-          role: "user",
-          content:
-            "Lähdesivu: " +
-            signals.url +
-            "\nTitle: " +
-            signals.title +
-            "\nDescription: " +
-            signals.description +
-            "\nTeksti: " +
-            signals.textSample +
-            "\nAnalyysipisteet: " +
-            (audit && audit.score) +
-            "\nTop-korjaukset: " +
-            JSON.stringify((audit && audit.topFixes) || []),
-        },
-      ],
-    }),
-  });
-  var payload = await response.json().catch(function () {
-    return {};
-  });
-  if (!response.ok) return null;
-  var content =
-    payload.choices &&
-    payload.choices[0] &&
-    payload.choices[0].message &&
-    payload.choices[0].message.content;
+  var controller = new AbortController();
+  var timer = setTimeout(function () {
+    controller.abort();
+  }, 12000);
   try {
-    return JSON.parse(content);
+    var response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + apiKey,
+        "Content-Type": "application/json",
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: model,
+        temperature: 0.4,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              'Kirjoita suomeksi konvertoiva demosivun copy JSON-muodossa: {"brandName":"","headline":"","lead":"","cta":"","services":[{"title":"","text":""}]}. 3-4 palvelua. Älä keksi valheellisia referenssejä. Pidä sävy ammattimainen.',
+          },
+          {
+            role: "user",
+            content:
+              "Lähdesivu: " +
+              signals.url +
+              "\nTitle: " +
+              signals.title +
+              "\nDescription: " +
+              signals.description +
+              "\nTeksti: " +
+              signals.textSample +
+              "\nAnalyysipisteet: " +
+              (audit && audit.score) +
+              "\nTop-korjaukset: " +
+              JSON.stringify((audit && audit.topFixes) || []),
+          },
+        ],
+      }),
+    });
+    var payload = await response.json().catch(function () {
+      return {};
+    });
+    if (!response.ok) return null;
+    var content =
+      payload.choices &&
+      payload.choices[0] &&
+      payload.choices[0].message &&
+      payload.choices[0].message.content;
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      return null;
+    }
   } catch (e) {
-    return null;
+    if (isAbortError(e)) return null;
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -210,11 +237,11 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  var claim = await claimPreviewEmail(email, { url: targetUrl });
-  if (!claim.allowed) {
+  var used = await isPreviewEmailUsed(email);
+  if (used.used) {
     sendJson(res, 429, {
-      error: claim.message || "Tällä sähköpostilla on jo luotu demosivu.",
-      code: claim.reason || "already_used",
+      error: "Tällä sähköpostilla on jo luotu demosivu. Yksi demo / sähköposti.",
+      code: used.reason || "already_used",
     });
     return;
   }
@@ -261,6 +288,13 @@ module.exports = async function handler(req, res) {
       score: audit.score,
     });
 
+    var claim = await claimPreviewEmail(email, {
+      url: signals.url,
+      previewUrl: deployed.url,
+    });
+    if (!claim.allowed && claim.reason === "already_used") {
+      // Race: another request finished first — email still sent once here; treat as ok.
+    }
     await updatePreviewClaim(email, {
       url: signals.url,
       previewUrl: deployed.url,
@@ -290,8 +324,12 @@ module.exports = async function handler(req, res) {
     });
   } catch (e) {
     console.error("audit-generate error:", e && e.message ? e.message : e, e && e.payload);
-    sendJson(res, e.status || 502, {
-      error: e.message || "Demosivun generointi epäonnistui",
+    var msg = e && e.message ? e.message : "Demosivun generointi epäonnistui";
+    if (isAbortError(e)) {
+      msg = "Operaatio keskeytyi aikakatkaisuun. Kokeile uudelleen — demosivun luonti voi kestää hetken.";
+    }
+    sendJson(res, e.status || (isAbortError(e) ? 504 : 502), {
+      error: msg,
       hint: "Tarkista VERCEL_TOKEN, RESEND_API_KEY ja että lähdesivu on julkinen.",
     });
   }

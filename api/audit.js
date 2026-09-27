@@ -537,11 +537,17 @@ function heuristicAudit(signals) {
   };
 }
 
+function isAbortError(err) {
+  if (!err) return false;
+  if (err.name === "AbortError") return true;
+  return /aborted|abort/i.test(String(err.message || ""));
+}
+
 async function fetchPage(url) {
   var controller = new AbortController();
   var timer = setTimeout(function () {
     controller.abort();
-  }, 12000);
+  }, 20000);
 
   try {
     var response = await fetch(url, {
@@ -577,6 +583,15 @@ async function fetchPage(url) {
     var buffer = Buffer.from(await response.arrayBuffer());
     if (buffer.length > 1200000) buffer = buffer.subarray(0, 1200000);
     return { html: buffer.toString("utf8"), finalUrl: finalUrl };
+  } catch (e) {
+    if (isAbortError(e)) {
+      var timeoutErr = new Error(
+        "Sivun lataus kesti liian kauan. Kokeile uudelleen tai toista URL:ia."
+      );
+      timeoutErr.status = 504;
+      throw timeoutErr;
+    }
+    throw e;
   } finally {
     clearTimeout(timer);
   }
@@ -857,8 +872,12 @@ module.exports = async function handler(req, res) {
     cacheSet(targetUrl, payload);
     await finishWithLead(payload);
   } catch (e) {
-    sendJson(res, e.status || 502, {
-      error: e.message || "Analyysi epäonnistui",
+    var msg = e && e.message ? e.message : "Analyysi epäonnistui";
+    if (isAbortError(e)) {
+      msg = "Sivun lataus kesti liian kauan. Kokeile uudelleen tai toista URL:ia.";
+    }
+    sendJson(res, e.status || (isAbortError(e) ? 504 : 502), {
+      error: msg,
       hint: "Tarkista URL ja että sivu on julkisesti saatavilla.",
     });
   }
