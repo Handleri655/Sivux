@@ -631,6 +631,45 @@ function heuristicAudit(signals) {
   conversion = clampScore(conversion);
   visual = clampScore(visual);
 
+  var uniqueCriticalPreview = [];
+  critical.forEach(function (item) {
+    if (uniqueCriticalPreview.indexOf(item) === -1) uniqueCriticalPreview.push(item);
+  });
+  var perfectSweep =
+    uniqueCriticalPreview.length === 0 &&
+    signals.hasHttps &&
+    signals.viewport &&
+    signals.h1Count === 1 &&
+    signals.h2Count >= 2 &&
+    signals.wordCount > 150 &&
+    Boolean(signals.ctaInHero) &&
+    signals.hasForm &&
+    (signals.hasTel || signals.hasMailto) &&
+    signals.trustHints >= 3 &&
+    signals.title &&
+    signals.title.length >= 15 &&
+    signals.title.length <= 65 &&
+    signals.description &&
+    signals.description.length >= 70 &&
+    signals.ogImage &&
+    signals.canonical &&
+    signals.hasJsonLd &&
+    signals.hasLang &&
+    signals.hasCustomFonts &&
+    signals.hasHeroMedia &&
+    signals.hasFavicon &&
+    !signals.usesGenericBuilder &&
+    !signals.usesTableLayout &&
+    signals.imagesWithoutAlt === 0;
+  if (perfectSweep) {
+    clarity = 100;
+    mobile = 100;
+    seo = 100;
+    trust = 100;
+    conversion = 100;
+    visual = 100;
+  }
+
   var score = clampScore(
     clarity * 0.17 +
       mobile * 0.12 +
@@ -1011,6 +1050,15 @@ module.exports = async function handler(req, res) {
           }
         });
         result = ai;
+        if (fallback && fallback.score === 100 && (!fallback.critical || !fallback.critical.length)) {
+          result.score = 100;
+          result.scoreLabel = scoreLabel(100).text;
+          result.scoreTier = "excellent";
+          result.categories = fallback.categories;
+          result.critical = [];
+          result.topFixes = [];
+          result.potentialGain = 0;
+        }
       } else {
         aiNote = "AI-avainta ei ole asetettu — käytössä automaattinen heuristic-arvio.";
       }
