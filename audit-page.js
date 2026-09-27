@@ -544,8 +544,9 @@
     } catch (error) {
       showProgress(false);
       var msg = error.message || "Analyysi epäonnistui";
-      if (/aborted|abort/i.test(msg)) {
-        msg = "Sivun lataus kesti liian kauan. Kokeile uudelleen tai toista URL:ia.";
+      if (/aborted|abort|aikakatkaisu|ei vastannut/i.test(msg)) {
+        msg =
+          "Kohdesivusto ei vastannut ajoissa. Sivu voi olla hidas, lukittu boteilta tai sen palvelin jumissa — kokeile toista URL:ia.";
       }
       setStatus(msg, true);
     } finally {

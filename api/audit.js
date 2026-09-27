@@ -556,8 +556,10 @@ async function fetchPage(url) {
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "SivuxSiteAudit/1.0 (+https://sivux.fi/sivustoanalyysi.html; contact info@sivux.fi)",
+          "Mozilla/5.0 (compatible; SivuxSiteAudit/1.1; +https://sivux.fi/sivustoanalyysi.html)",
         Accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "fi-FI,fi;q=0.9,en;q=0.8",
+        "Cache-Control": "no-cache",
       },
     });
 
@@ -586,7 +588,7 @@ async function fetchPage(url) {
   } catch (e) {
     if (isAbortError(e)) {
       var timeoutErr = new Error(
-        "Sivun lataus kesti liian kauan. Kokeile uudelleen tai toista URL:ia."
+        "Kohdesivusto ei vastannut ajoissa. Sivu voi olla hidas, lukittu boteilta tai sen palvelin jumissa — kokeile toista URL:ia."
       );
       timeoutErr.status = 504;
       throw timeoutErr;
@@ -874,11 +876,11 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     var msg = e && e.message ? e.message : "Analyysi epäonnistui";
     if (isAbortError(e)) {
-      msg = "Sivun lataus kesti liian kauan. Kokeile uudelleen tai toista URL:ia.";
+      msg = "Kohdesivusto ei vastannut ajoissa. Sivu voi olla hidas, lukittu boteilta tai sen palvelin jumissa — kokeile toista URL:ia.";
     }
     sendJson(res, e.status || (isAbortError(e) ? 504 : 502), {
       error: msg,
-      hint: "Tarkista URL ja että sivu on julkisesti saatavilla.",
+      hint: "Tarkista URL ja että sivu on julkisesti saatavilla. Jos selain aukaisee sivun mutta analyysi ei, palvelin todennäköisesti estää botit.",
     });
   }
 };
