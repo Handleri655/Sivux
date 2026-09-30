@@ -1,7 +1,15 @@
 {
+  "redirects": [
+    {
+      "source": "/sivustoanalyysi.html",
+      "destination": "/sivustoanalyysi",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/asiakas", "destination": "/asiakas/index.html" },
-    { "source": "/asiakas/dashboard", "destination": "/asiakas/dashboard.html" }
+    { "source": "/asiakas/dashboard", "destination": "/asiakas/dashboard.html" },
+    { "source": "/sivustoanalyysi", "destination": "/sivustoanalyysi.html" }
   ],
   "functions": {
     "api/audit.js": { "maxDuration": 30 },

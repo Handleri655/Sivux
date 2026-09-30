@@ -711,7 +711,7 @@ async function fetchPage(url) {
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; SivuxSiteAudit/1.1; +https://sivux.fi/sivustoanalyysi.html)",
+          "Mozilla/5.0 (compatible; SivuxSiteAudit/1.1; +https://sivux.fi/sivustoanalyysi)",
         Accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "fi-FI,fi;q=0.9,en;q=0.8",
         "Cache-Control": "no-cache",

@@ -89,6 +89,8 @@ function serveStatic(req, res, urlPath) {
     filePath = path.join(ROOT, "asiakas", "index.html");
   } else if (urlPath === "/asiakas/dashboard" || urlPath === "/asiakas/dashboard/") {
     filePath = path.join(ROOT, "asiakas", "dashboard.html");
+  } else if (urlPath === "/sivustoanalyysi" || urlPath === "/sivustoanalyysi/") {
+    filePath = path.join(ROOT, "sivustoanalyysi.html");
   } else if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
     filePath = path.join(filePath, "index.html");
   }
@@ -141,6 +143,12 @@ const server = http.createServer(async function (req, res) {
       return;
     }
 
+    if (pathname === "/sivustoanalyysi.html") {
+      res.writeHead(301, { Location: "/sivustoanalyysi" });
+      res.end();
+      return;
+    }
+
     serveStatic(req, res, pathname === "/" ? "/index.html" : pathname);
   } catch (error) {
     console.error(error);
@@ -153,7 +161,7 @@ const server = http.createServer(async function (req, res) {
 server.listen(PORT, function () {
   console.log("Sivux local server: http://localhost:" + PORT);
   console.log("Asiakasportaali:    http://localhost:" + PORT + "/asiakas");
-  console.log("Sivustoanalyysi:    http://localhost:" + PORT + "/sivustoanalyysi.html");
+  console.log("Sivustoanalyysi:    http://localhost:" + PORT + "/sivustoanalyysi");
   if (!process.env.AUTH_SECRET) {
     console.log("Note: AUTH_SECRET not set — create .env from .env.example for login/API.");
   }
