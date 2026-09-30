@@ -4,6 +4,9 @@ const {
   readBearerToken,
   setCors,
   sendJson,
+  getClientIp,
+  checkRateLimit,
+  rateLimitResponse,
 } = require("../lib/portal-auth");
 
 function daysAgoIso(days) {
@@ -117,7 +120,7 @@ function normalizeRows(payload) {
 }
 
 module.exports = async function handler(req, res) {
-  setCors(res);
+  setCors(res, req);
 
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
@@ -127,6 +130,16 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== "GET") {
     sendJson(res, 405, { error: "Method not allowed" });
+    return;
+  }
+
+  var ip = getClientIp(req);
+  var limited = await checkRateLimit("metrics", ip, {
+    limit: 60,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.allowed) {
+    rateLimitResponse(res, limited);
     return;
   }
 

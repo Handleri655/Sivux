@@ -3,6 +3,9 @@ const {
   sendJson,
   parseBody,
   getEnv,
+  getClientIp,
+  checkRateLimit,
+  rateLimitResponse,
 } = require("../lib/portal-auth");
 const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
 
@@ -57,7 +60,7 @@ async function notifyQuoteRequest(payload) {
 }
 
 module.exports = async function handler(req, res) {
-  setCors(res);
+  setCors(res, req);
 
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
@@ -70,11 +73,23 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  var ip = getClientIp(req);
+  var limited = await checkRateLimit("audit-quote", ip, {
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.allowed) {
+    rateLimitResponse(res, limited);
+    return;
+  }
+
   var body;
   try {
-    body = await parseBody(req);
+    body = await parseBody(req, { maxBytes: 64 * 1024 });
   } catch (e) {
-    sendJson(res, 400, { error: "Invalid JSON body" });
+    sendJson(res, e.status || 400, {
+      error: e.status === 413 ? "Pyyntö liian suuri" : "Invalid JSON body",
+    });
     return;
   }
 

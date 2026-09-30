@@ -3,6 +3,9 @@ const {
   sendJson,
   parseBody,
   getEnv,
+  getClientIp,
+  checkRateLimit,
+  rateLimitResponse,
 } = require("../lib/portal-auth");
 const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
 const { buildPreviewHtml, pickBrandName } = require("../lib/preview-generator");
@@ -186,7 +189,7 @@ async function aiCopy(signals, audit) {
 }
 
 module.exports = async function handler(req, res) {
-  setCors(res);
+  setCors(res, req);
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
     res.end();
@@ -197,11 +200,23 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  var ip = getClientIp(req);
+  var limited = await checkRateLimit("audit-generate", ip, {
+    limit: 5,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.allowed) {
+    rateLimitResponse(res, limited);
+    return;
+  }
+
   var body;
   try {
-    body = await parseBody(req);
+    body = await parseBody(req, { maxBytes: 64 * 1024 });
   } catch (e) {
-    sendJson(res, 400, { error: "Invalid JSON body" });
+    sendJson(res, e.status || 400, {
+      error: e.status === 413 ? "Pyyntö liian suuri" : "Invalid JSON body",
+    });
     return;
   }
   if (body && body.website) {

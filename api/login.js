@@ -5,10 +5,14 @@ const {
   setCors,
   sendJson,
   parseBody,
+  getClientIp,
+  checkRateLimit,
+  passwordsMatch,
+  rateLimitResponse,
 } = require("../lib/portal-auth");
 
 module.exports = async function handler(req, res) {
-  setCors(res);
+  setCors(res, req);
 
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
@@ -18,6 +22,16 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== "POST") {
     sendJson(res, 405, { error: "Method not allowed" });
+    return;
+  }
+
+  var ip = getClientIp(req);
+  var limited = await checkRateLimit("login", ip, {
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.allowed) {
+    rateLimitResponse(res, limited);
     return;
   }
 
@@ -31,17 +45,20 @@ module.exports = async function handler(req, res) {
 
   var body;
   try {
-    body = await parseBody(req);
+    body = await parseBody(req, { maxBytes: 8 * 1024 });
   } catch (e) {
-    sendJson(res, 400, { error: "Invalid JSON body" });
+    sendJson(res, e.status || 400, {
+      error: e.status === 413 ? "Pyyntö liian suuri" : "Invalid JSON body",
+    });
     return;
   }
 
   var email = String(body.email || "").trim().toLowerCase();
   var password = String(body.password || "");
   var client = findClientByEmail(email);
+  var passwordOk = client && passwordsMatch(password, client.password);
 
-  if (!client || !client.password || password !== client.password) {
+  if (!client || !client.password || !passwordOk) {
     sendJson(res, 401, { error: "Virheellinen sähköposti tai salasana" });
     return;
   }

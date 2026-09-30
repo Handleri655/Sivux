@@ -3,40 +3,14 @@ const {
   setCors,
   sendJson,
   parseBody,
+  getClientIp,
+  checkRateLimit,
+  rateLimitResponse,
 } = require("../lib/portal-auth");
 const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
 
-var rateBucket = new Map();
-var RATE_WINDOW_MS = 60 * 60 * 1000;
-var RATE_MAX = 40;
 var resultCache = new Map();
 var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-
-function getClientIp(req) {
-  var forwarded = req.headers["x-forwarded-for"] || req.headers["X-Forwarded-For"] || "";
-  if (forwarded) {
-    return String(forwarded).split(",")[0].trim();
-  }
-  return (
-    req.headers["x-real-ip"] ||
-    (req.socket && req.socket.remoteAddress) ||
-    "unknown"
-  );
-}
-
-function checkRateLimit(ip) {
-  var now = Date.now();
-  var entry = rateBucket.get(ip);
-  if (!entry || now - entry.start > RATE_WINDOW_MS) {
-    rateBucket.set(ip, { start: now, count: 1 });
-    return true;
-  }
-  if (entry.count >= RATE_MAX) {
-    return false;
-  }
-  entry.count += 1;
-  return true;
-}
 
 function cacheGet(key) {
   var hit = resultCache.get(key);
@@ -946,7 +920,7 @@ async function aiAudit(signals) {
 }
 
 module.exports = async function handler(req, res) {
-  setCors(res);
+  setCors(res, req);
 
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
@@ -960,18 +934,22 @@ module.exports = async function handler(req, res) {
   }
 
   var ip = getClientIp(req);
-  if (!checkRateLimit(ip)) {
-    sendJson(res, 429, {
-      error: "Liian monta analyysia. Kokeile uudelleen myöhemmin.",
-    });
+  var limited = await checkRateLimit("audit", ip, {
+    limit: 20,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.allowed) {
+    rateLimitResponse(res, limited);
     return;
   }
 
   var body;
   try {
-    body = await parseBody(req);
+    body = await parseBody(req, { maxBytes: 32 * 1024 });
   } catch (e) {
-    sendJson(res, 400, { error: "Invalid JSON body" });
+    sendJson(res, e.status || 400, {
+      error: e.status === 413 ? "Pyyntö liian suuri" : "Invalid JSON body",
+    });
     return;
   }
 

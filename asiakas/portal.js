@@ -78,6 +78,14 @@
     return data;
   }
 
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function renderBars(container, rows, labelKey, valueKey) {
     if (!container) {
       return;
@@ -99,7 +107,7 @@
         return (
           '<div class="portal-bar-row">' +
           '<span class="portal-bar-label">' +
-          String(row[labelKey] || "—") +
+          escapeHtml(row[labelKey] || "—") +
           "</span>" +
           '<div class="portal-bar-track"><span class="portal-bar-fill" style="width:' +
           width +
@@ -126,7 +134,7 @@
         return (
           '<div class="portal-row">' +
           "<span>" +
-          String(row[labelKey] || "—") +
+          escapeHtml(row[labelKey] || "—") +
           '</span><span class="portal-row-meta">' +
           formatNumber(row[valueKey] || 0) +
           "</span></div>"
