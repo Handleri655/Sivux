@@ -728,11 +728,7 @@
       setHidden("utm_campaign", attr.utm_campaign || "");
       setHidden("utm_content", attr.utm_content || "");
       setHidden("attribution_landing", attr.landing || "");
-
-      var promoInput = form.querySelector('[name="kampanjakoodi"]');
-      if (promoInput && !promoInput.value && attr.promo) {
-        promoInput.value = attr.promo;
-      }
+      // Kampanjakoodi jätetään tyhjäksi — asiakas syöttää vain jos tietää koodin.
     });
   }
 
