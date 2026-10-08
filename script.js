@@ -591,6 +591,183 @@
     addMessage("bot", dict.welcome);
   }
 
+  var ATTR_STORAGE_KEY = "sivux_attr_v1";
+  var ATTR_TTL_MS = 60 * 24 * 60 * 60 * 1000; // 60 days
+  var KNOWN_PROMO = {
+    MAX: { discount: "10%", partner: "max" },
+  };
+
+  function readStoredAttribution() {
+    try {
+      var raw = window.localStorage.getItem(ATTR_STORAGE_KEY);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      if (!data || !data.expiresAt || Date.now() > Number(data.expiresAt)) {
+        window.localStorage.removeItem(ATTR_STORAGE_KEY);
+        return null;
+      }
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStoredAttribution(data) {
+    try {
+      window.localStorage.setItem(ATTR_STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      // ignore quota / private mode
+    }
+  }
+
+  function normalizePromo(raw) {
+    return String(raw || "")
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, "")
+      .slice(0, 32);
+  }
+
+  function captureAttributionFromUrl() {
+    var params;
+    try {
+      params = new URLSearchParams(window.location.search);
+    } catch (e) {
+      return readStoredAttribution();
+    }
+
+    var fromUrl = {
+      ref: String(params.get("ref") || "")
+        .trim()
+        .toLowerCase()
+        .slice(0, 40),
+      promo: normalizePromo(params.get("promo") || params.get("code") || ""),
+      utm_source: String(params.get("utm_source") || "")
+        .trim()
+        .toLowerCase()
+        .slice(0, 64),
+      utm_medium: String(params.get("utm_medium") || "")
+        .trim()
+        .toLowerCase()
+        .slice(0, 64),
+      utm_campaign: String(params.get("utm_campaign") || "")
+        .trim()
+        .toLowerCase()
+        .slice(0, 80),
+      utm_content: String(params.get("utm_content") || "")
+        .trim()
+        .toLowerCase()
+        .slice(0, 80),
+      landing: String(window.location.pathname || "/") + String(window.location.search || ""),
+    };
+
+    if (fromUrl.ref === "max" && !fromUrl.promo) {
+      fromUrl.promo = "MAX";
+    }
+
+    var hasUrlAttr = Boolean(
+      fromUrl.ref ||
+        fromUrl.promo ||
+        fromUrl.utm_source ||
+        fromUrl.utm_medium ||
+        fromUrl.utm_campaign ||
+        fromUrl.utm_content
+    );
+
+    var existing = readStoredAttribution();
+    if (!hasUrlAttr) {
+      return existing;
+    }
+
+    // First-touch: keep the original campaign if still valid.
+    if (existing) {
+      return existing;
+    }
+
+    var stored = {
+      ref: fromUrl.ref,
+      promo: fromUrl.promo,
+      utm_source: fromUrl.utm_source,
+      utm_medium: fromUrl.utm_medium,
+      utm_campaign: fromUrl.utm_campaign,
+      utm_content: fromUrl.utm_content,
+      landing: fromUrl.landing.slice(0, 300),
+      capturedAt: new Date().toISOString(),
+      expiresAt: Date.now() + ATTR_TTL_MS,
+    };
+    writeStoredAttribution(stored);
+    return stored;
+  }
+
+  function getAttributionPayload() {
+    var stored = captureAttributionFromUrl() || {};
+    var promoField = document.getElementById("kampanjakoodi");
+    var promoFromForm = promoField ? normalizePromo(promoField.value) : "";
+    var promo = promoFromForm || stored.promo || "";
+    return {
+      promoCode: promo,
+      ref: stored.ref || "",
+      utmSource: stored.utm_source || "",
+      utmMedium: stored.utm_medium || "",
+      utmCampaign: stored.utm_campaign || "",
+      utmContent: stored.utm_content || "",
+      landing: stored.landing || "",
+    };
+  }
+
+  function applyAttributionToForms(stored) {
+    var attr = stored || captureAttributionFromUrl() || {};
+    document.querySelectorAll(".contact-form").forEach(function (form) {
+      function setHidden(name, value) {
+        var el = form.querySelector('[name="' + name + '"]');
+        if (el) el.value = value || "";
+      }
+      setHidden("ref", attr.ref || "");
+      setHidden("utm_source", attr.utm_source || "");
+      setHidden("utm_medium", attr.utm_medium || "");
+      setHidden("utm_campaign", attr.utm_campaign || "");
+      setHidden("utm_content", attr.utm_content || "");
+      setHidden("attribution_landing", attr.landing || "");
+
+      var promoInput = form.querySelector('[name="kampanjakoodi"]');
+      if (promoInput && !promoInput.value && attr.promo) {
+        promoInput.value = attr.promo;
+      }
+    });
+  }
+
+  function initAttribution() {
+    var stored = captureAttributionFromUrl();
+    applyAttributionToForms(stored);
+
+    if (stored && (stored.ref || stored.utm_source || stored.promo)) {
+      try {
+        if (typeof window.va === "function") {
+          window.va("event", {
+            name: "campaign_landing",
+            data: {
+              ref: stored.ref || "",
+              promo: stored.promo || "",
+              utm_source: stored.utm_source || "",
+              utm_campaign: stored.utm_campaign || "",
+              utm_medium: stored.utm_medium || "",
+            },
+          });
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    window.SivuxAttribution = {
+      get: getAttributionPayload,
+      refreshForms: function () {
+        applyAttributionToForms(readStoredAttribution());
+      },
+      knownPromo: KNOWN_PROMO,
+    };
+  }
+
   function initFormValidation() {
     var forms = document.querySelectorAll(".contact-form");
     if (!forms.length) {
@@ -657,6 +834,12 @@
           return;
         }
 
+        applyAttributionToForms(readStoredAttribution());
+        var promoInput = form.querySelector('[name="kampanjakoodi"]');
+        if (promoInput) {
+          promoInput.value = normalizePromo(promoInput.value);
+        }
+
         // Let native form submit proceed to FormSubmit (email delivery).
         status.hidden = false;
         status.className = "form-status is-success";
@@ -706,8 +889,16 @@
 
     document.querySelectorAll(".contact-form").forEach(function (form) {
       form.addEventListener("submit", function () {
+        var attr =
+          typeof window.SivuxAttribution !== "undefined" && window.SivuxAttribution.get
+            ? window.SivuxAttribution.get()
+            : {};
         emitEvent("lead_submit_attempt", {
           page_lang: document.documentElement.lang || "fi",
+          promo: attr.promoCode || "",
+          ref: attr.ref || "",
+          utm_source: attr.utmSource || "",
+          utm_campaign: attr.utmCampaign || "",
         });
       });
 
@@ -1102,8 +1293,10 @@
   }
 
   if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAttribution);
     document.addEventListener("DOMContentLoaded", initFormValidation);
   } else {
+    initAttribution();
     initFormValidation();
   }
 

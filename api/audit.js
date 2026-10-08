@@ -8,6 +8,7 @@ const {
   rateLimitResponse,
 } = require("../lib/portal-auth");
 const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
+const { pickAttribution } = require("../lib/attribution");
 
 var resultCache = new Map();
 var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -1014,6 +1015,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  var attribution = pickAttribution(body && (body.attribution || body));
+
   var targetUrl;
   try {
     targetUrl = normalizeUrl(body && body.url);
@@ -1040,6 +1043,7 @@ module.exports = async function handler(req, res) {
         engine: payload.engine,
         ip: ip,
         analyzedAt: payload.analyzedAt,
+        attribution: attribution,
       });
     } catch (leadErr) {
       console.error("audit lead capture failed:", leadErr && leadErr.message ? leadErr.message : leadErr);

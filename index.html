@@ -764,12 +764,22 @@
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_subject" value="Uusi yhteydenotto sivustolta (FI)" />
             <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp-field" />
+            <input type="hidden" name="ref" value="" />
+            <input type="hidden" name="utm_source" value="" />
+            <input type="hidden" name="utm_medium" value="" />
+            <input type="hidden" name="utm_campaign" value="" />
+            <input type="hidden" name="utm_content" value="" />
+            <input type="hidden" name="attribution_landing" value="" />
             <div class="form-grid">
               <label>Nimi<input type="text" name="name" required /></label>
               <label>Yritys<input type="text" name="company" /></label>
               <label>Sähköposti<input type="email" name="email" required /></label>
               <label>Puhelin<input type="tel" name="phone" /></label>
               <label class="full">Mitä tarvitset?<textarea name="message" rows="4" required placeholder="Kerro tavoite, laajuus ja aikataulu"></textarea></label>
+              <label class="full">Kampanjakoodi (jos on)
+                <input type="text" name="kampanjakoodi" id="kampanjakoodi" autocomplete="off" placeholder="esim. MAX" maxlength="32" />
+                <span class="form-field-hint">Koodi MAX = 10 % alennus projektista</span>
+              </label>
             </div>
             <div class="cta-actions">
               <button type="submit" class="btn btn-primary btn-on-dark" data-track="cta_form_submit">Lähetä viesti</button>

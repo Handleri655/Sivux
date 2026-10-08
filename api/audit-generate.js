@@ -8,6 +8,7 @@ const {
   rateLimitResponse,
 } = require("../lib/portal-auth");
 const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
+const { pickAttribution } = require("../lib/attribution");
 const { buildPreviewHtml, pickBrandName } = require("../lib/preview-generator");
 const { deployPreviewSite } = require("../lib/vercel-deploy");
 const { sendPreviewEmail } = require("../lib/preview-email");
@@ -230,6 +231,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  var attribution = pickAttribution(body && (body.attribution || body));
+
   var targetUrl;
   try {
     targetUrl = normalizeUrl(body && body.url);
@@ -327,6 +330,7 @@ module.exports = async function handler(req, res) {
       scoreLabel: "PREVIEW_SENT",
       engine: "preview-bot",
       analyzedAt: new Date().toISOString(),
+      attribution: attribution,
       skipNotify: true,
     });
 

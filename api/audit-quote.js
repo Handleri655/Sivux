@@ -8,6 +8,7 @@ const {
   rateLimitResponse,
 } = require("../lib/portal-auth");
 const { normalizeEmail, captureAuditLead } = require("../lib/audit-leads");
+const { pickAttribution, attributionLines, hasAttribution } = require("../lib/attribution");
 
 var CUSTOMER_AUTOREPLY =
   "Kiitos yhteydenotostasi!\n\n" +
@@ -32,6 +33,9 @@ async function notifyQuoteRequest(payload) {
       score_label: payload.scoreLabel || "",
       top_fixes: payload.topFixesText || "",
       critical: payload.criticalText || "",
+      kampanjakoodi: (payload.attribution && payload.attribution.promoCode) || "",
+      ref: (payload.attribution && payload.attribution.ref) || "",
+      utm_source: (payload.attribution && payload.attribution.utmSource) || "",
       message:
         "Asiakas pyysi tarjousta sivustoanalyysin jälkeen.\n\n" +
         "Sähköposti: " +
@@ -40,6 +44,9 @@ async function notifyQuoteRequest(payload) {
         payload.url +
         "\nPisteet: " +
         (payload.score != null ? payload.score + "/100" : "n/a") +
+        (hasAttribution(payload.attribution)
+          ? "\n\nAttribution:\n" + attributionLines(payload.attribution)
+          : "") +
         "\n\nTop-korjaukset:\n" +
         (payload.topFixesText || "-") +
         "\n\nKriittiset:\n" +
@@ -109,6 +116,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  var attribution = pickAttribution(body && (body.attribution || body));
   var score = typeof body.score === "number" ? body.score : Number(body.score);
   if (!isFinite(score)) score = null;
 
@@ -136,6 +144,7 @@ module.exports = async function handler(req, res) {
       scoreLabel: String((body && body.scoreLabel) || ""),
       topFixesText: topFixesText,
       criticalText: criticalText,
+      attribution: attribution,
     });
 
     await captureAuditLead({
@@ -147,6 +156,7 @@ module.exports = async function handler(req, res) {
       scoreLabel: String((body && body.scoreLabel) || ""),
       engine: "quote-request",
       analyzedAt: new Date().toISOString(),
+      attribution: attribution,
       skipNotify: true,
     });
 

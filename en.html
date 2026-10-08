@@ -559,12 +559,22 @@
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_subject" value="New contact request from website (EN)" />
             <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp-field" />
+            <input type="hidden" name="ref" value="" />
+            <input type="hidden" name="utm_source" value="" />
+            <input type="hidden" name="utm_medium" value="" />
+            <input type="hidden" name="utm_campaign" value="" />
+            <input type="hidden" name="utm_content" value="" />
+            <input type="hidden" name="attribution_landing" value="" />
             <div class="form-grid">
               <label>Name<input type="text" name="name" required /></label>
               <label>Company<input type="text" name="company" /></label>
               <label>Email<input type="email" name="email" required /></label>
               <label>Phone<input type="tel" name="phone" /></label>
               <label class="full">What do you need?<textarea name="message" rows="4" required placeholder="Share your goal, scope and timeline"></textarea></label>
+              <label class="full">Promo code (optional)
+                <input type="text" name="kampanjakoodi" id="kampanjakoodi" autocomplete="off" placeholder="e.g. MAX" maxlength="32" />
+                <span class="form-field-hint">Code MAX = 10% off the project</span>
+              </label>
             </div>
             <div class="cta-actions">
               <button type="submit" class="btn btn-primary btn-on-dark" data-track="cta_form_submit">Send request</button>

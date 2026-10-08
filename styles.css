@@ -1631,6 +1631,14 @@ html.has-motion .price-card:hover {
   color: var(--muted);
 }
 
+.form-field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(200, 205, 216, 0.78);
+}
+
 .audit-check {
   margin-top: 0.85rem;
   display: flex;

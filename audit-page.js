@@ -374,15 +374,20 @@
       var response = await fetch("/api/audit-generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: latestEmail,
-          url: latestResult.url,
-          score: latestResult.score,
-          scoreLabel: latestResult.scoreLabel,
-          topFixes: latestResult.topFixes || [],
-          critical: latestResult.critical || [],
-          categories: latestResult.categories || {},
-        }),
+        body: JSON.stringify(
+          Object.assign(
+            {
+              email: latestEmail,
+              url: latestResult.url,
+              score: latestResult.score,
+              scoreLabel: latestResult.scoreLabel,
+              topFixes: latestResult.topFixes || [],
+              critical: latestResult.critical || [],
+              categories: latestResult.categories || {},
+            },
+            { attribution: attributionForApi() }
+          )
+        ),
       });
       var data = await response.json().catch(function () {
         return {};
@@ -450,14 +455,19 @@
       var response = await fetch("/api/audit-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: latestEmail,
-          url: latestResult.url,
-          score: latestResult.score,
-          scoreLabel: latestResult.scoreLabel,
-          topFixes: latestResult.topFixes || [],
-          critical: latestResult.critical || [],
-        }),
+        body: JSON.stringify(
+          Object.assign(
+            {
+              email: latestEmail,
+              url: latestResult.url,
+              score: latestResult.score,
+              scoreLabel: latestResult.scoreLabel,
+              topFixes: latestResult.topFixes || [],
+              critical: latestResult.critical || [],
+            },
+            { attribution: attributionForApi() }
+          )
+        ),
       });
       var data = await response.json().catch(function () {
         return {};
@@ -515,6 +525,13 @@
     resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function attributionForApi() {
+    if (typeof window.SivuxAttribution !== "undefined" && window.SivuxAttribution.get) {
+      return window.SivuxAttribution.get();
+    }
+    return {};
+  }
+
   async function runAudit(url, email) {
     if (emailContinueBtn) emailContinueBtn.disabled = true;
     if (submitBtn) submitBtn.disabled = true;
@@ -525,6 +542,7 @@
     resultEl.classList.add("is-hidden");
 
     try {
+      var attr = attributionForApi();
       var response = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -532,6 +550,13 @@
           url: url,
           email: email,
           website: form.elements.website ? form.elements.website.value : "",
+          attribution: attr,
+          promoCode: attr.promoCode || "",
+          ref: attr.ref || "",
+          utm_source: attr.utmSource || "",
+          utm_medium: attr.utmMedium || "",
+          utm_campaign: attr.utmCampaign || "",
+          utm_content: attr.utmContent || "",
         }),
       });
       var data = await response.json().catch(function () {
