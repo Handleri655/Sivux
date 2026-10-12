@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <title>Sivux käyntikortti 88×56 mm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* 8.8 cm × 5.6 cm @ 300 DPI = 1039 × 661 px */
+    :root {
+      --w: 1039px;
+      --h: 661px;
+      --bg: #07070d;
+      --text: #f2f4ff;
+      --muted: #a2a7c1;
+      --accent: #8af3ff;
+      --accent-3: #73ffca;
+      --safe: 48px; /* ~4 mm safety margin */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #222;
+      font-family: "Instrument Sans", system-ui, sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 32px;
+      min-height: 100vh;
+    }
+
+    .label {
+      color: #aaa;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+
+    .card {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(115, 255, 202, 0.14), transparent 42%),
+        radial-gradient(circle at 88% 12%, rgba(187, 155, 255, 0.18), transparent 46%),
+        radial-gradient(circle at 70% 90%, rgba(138, 243, 255, 0.1), transparent 40%),
+        linear-gradient(145deg, #0b0d16 0%, #07070d 55%, #05060a 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .card-accent {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-3) 100%);
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: var(--safe) var(--safe) var(--safe) calc(var(--safe) + 12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-family: "Outfit", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 92px;
+      letter-spacing: -0.055em;
+      line-height: 0.95;
+      color: var(--text);
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .tagline {
+      margin-top: 14px;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding-top: 22px;
+    }
+
+    .contacts {
+      display: grid;
+      gap: 7px;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    .contacts .muted {
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 500;
+    }
+
+    .domain {
+      font-family: "Outfit", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    /* Back */
+    .card--back .card-inner {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-left: var(--safe);
+    }
+
+    .card--back .brand {
+      font-size: 110px;
+    }
+
+    .card--back .tagline {
+      margin-top: 18px;
+      font-size: 24px;
+    }
+
+    .card--back .card-accent {
+      width: 100%;
+      height: 8px;
+      top: auto;
+      bottom: 0;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-3) 100%);
+    }
+  </style>
+</head>
+<body>
+  <p class="label">Etupuoli · 88 × 56 mm · 300 DPI</p>
+  <div class="card" id="card-front">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+      <div>
+        <div class="brand">Sivux<span>.</span></div>
+        <p class="tagline">Nettisivut yrityksille</p>
+      </div>
+      <div class="meta">
+        <div class="contacts">
+          <div>info@sivux.fi</div>
+          <div>+358 41 4967337</div>
+          <div class="muted">Y-tunnus 3616701-3</div>
+        </div>
+        <div class="domain">sivux.fi</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="label">Takapuoli · 88 × 56 mm · 300 DPI</p>
+  <div class="card card--back" id="card-back">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+      <div>
+        <div class="brand">Sivux<span>.</span></div>
+        <p class="tagline">Julkaisu 10 arkipäivässä · alk. 500 €</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
