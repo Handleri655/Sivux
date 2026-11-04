@@ -1200,6 +1200,47 @@ input[type="button"] {
   background: linear-gradient(120deg, var(--accent), var(--accent-3));
 }
 
+.maintenance-promo {
+  margin-top: clamp(1.5rem, 3.5vw, 2.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  flex-wrap: wrap;
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid rgba(115, 255, 202, 0.28);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(ellipse 70% 90% at 0% 50%, rgba(115, 255, 202, 0.1), transparent 55%),
+    var(--panel);
+}
+
+.maintenance-promo-copy {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.maintenance-promo-copy .section-kicker {
+  text-align: left;
+  margin-bottom: 0.35rem;
+}
+
+.maintenance-promo-copy h3 {
+  margin: 0 0 0.45rem;
+  font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+  line-height: 1.2;
+}
+
+.maintenance-promo-copy p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 40rem;
+}
+
+.maintenance-promo .btn {
+  flex: 0 0 auto;
+}
+
 .price-card:hover .price-features,
 .price-card:focus-within .price-features {
   margin-top: 0.85rem;
