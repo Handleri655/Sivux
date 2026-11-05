@@ -1206,6 +1206,69 @@ input[type="button"] {
   background: linear-gradient(120deg, var(--accent), var(--accent-3));
 }
 
+.domain-promo {
+  padding: clamp(1.5rem, 3.5vw, 2.35rem);
+  border: 1px solid rgba(138, 243, 255, 0.22);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(ellipse 70% 80% at 8% 10%, rgba(138, 243, 255, 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 95% 90%, rgba(187, 155, 255, 0.12), transparent 50%),
+    var(--panel);
+}
+
+.domain-promo-copy .section-kicker {
+  text-align: left;
+}
+
+.domain-promo-copy h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.55rem, 3.2vw, 2.1rem);
+  line-height: 1.15;
+}
+
+.domain-promo-copy > p {
+  margin: 0 0 1.15rem;
+  color: var(--muted);
+  max-width: 40rem;
+}
+
+.domain-promo-points {
+  list-style: none;
+  margin: 0 0 1.35rem;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.domain-promo-points li {
+  position: relative;
+  padding: 0.7rem 0.9rem 0.7rem 2.1rem;
+  border: 1px solid rgba(138, 243, 255, 0.16);
+  border-radius: calc(var(--radius) - 4px);
+  background: rgba(7, 8, 12, 0.35);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.domain-promo-points li::before {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+.domain-promo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .maintenance-promo {
   margin-top: clamp(1.5rem, 3.5vw, 2.25rem);
   display: flex;
