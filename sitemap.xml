@@ -43,4 +43,40 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://sivux.fi/tietosuoja</loc>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://sivux.fi/tietosuoja" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sivux.fi/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sivux.fi/tietosuoja" />
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://sivux.fi/kayttoehdot</loc>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://sivux.fi/kayttoehdot" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sivux.fi/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sivux.fi/kayttoehdot" />
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://sivux.fi/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://sivux.fi/tietosuoja" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sivux.fi/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sivux.fi/tietosuoja" />
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.35</priority>
+  </url>
+  <url>
+    <loc>https://sivux.fi/terms</loc>
+    <xhtml:link rel="alternate" hreflang="fi" href="https://sivux.fi/kayttoehdot" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://sivux.fi/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sivux.fi/kayttoehdot" />
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.35</priority>
+  </url>
 </urlset>

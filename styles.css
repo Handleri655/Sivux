@@ -893,6 +893,39 @@ input[type="button"] {
 
 .section-head-row { display: flex; justify-content: space-between; align-items: flex-end; max-width: none; text-align: left; }
 
+.legal-doc {
+  margin: 0 auto;
+  max-width: 68ch;
+  color: var(--muted);
+  text-align: left;
+}
+
+.legal-doc h2 {
+  margin: 2rem 0 0.65rem;
+  font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+  color: var(--text);
+}
+
+.legal-doc p,
+.legal-doc li {
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.legal-doc ul {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+}
+
+.legal-doc li {
+  margin: 0 0 0.45rem;
+}
+
+.legal-doc a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 .seo-copy {
   margin: 0 auto;
   max-width: 68ch;

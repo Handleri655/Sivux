@@ -9,7 +9,11 @@
   "rewrites": [
     { "source": "/asiakas", "destination": "/asiakas/index.html" },
     { "source": "/asiakas/dashboard", "destination": "/asiakas/dashboard.html" },
-    { "source": "/sivustoanalyysi", "destination": "/sivustoanalyysi.html" }
+    { "source": "/sivustoanalyysi", "destination": "/sivustoanalyysi.html" },
+    { "source": "/tietosuoja", "destination": "/tietosuoja.html" },
+    { "source": "/kayttoehdot", "destination": "/kayttoehdot.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" }
   ],
   "functions": {
     "api/audit.js": { "maxDuration": 30 },

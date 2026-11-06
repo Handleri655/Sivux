@@ -91,6 +91,14 @@ function serveStatic(req, res, urlPath) {
     filePath = path.join(ROOT, "asiakas", "dashboard.html");
   } else if (urlPath === "/sivustoanalyysi" || urlPath === "/sivustoanalyysi/") {
     filePath = path.join(ROOT, "sivustoanalyysi.html");
+  } else if (urlPath === "/tietosuoja" || urlPath === "/tietosuoja/") {
+    filePath = path.join(ROOT, "tietosuoja.html");
+  } else if (urlPath === "/kayttoehdot" || urlPath === "/kayttoehdot/") {
+    filePath = path.join(ROOT, "kayttoehdot.html");
+  } else if (urlPath === "/privacy" || urlPath === "/privacy/") {
+    filePath = path.join(ROOT, "privacy.html");
+  } else if (urlPath === "/terms" || urlPath === "/terms/") {
+    filePath = path.join(ROOT, "terms.html");
   } else if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
     filePath = path.join(filePath, "index.html");
   }
