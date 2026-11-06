@@ -1631,10 +1631,6 @@ input[type="button"] {
   overflow: hidden;
 }
 
-.faq-item[open] > .faq-answer {
-  overflow: visible;
-}
-
 .faq-answer > p:last-child {
   margin-bottom: 1.05rem;
 }
