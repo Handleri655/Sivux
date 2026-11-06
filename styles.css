@@ -322,7 +322,11 @@ input[type="button"] {
     transition: max-height 0.3s ease;
   }
 
-  .site-nav.is-open { max-height: 420px; }
+  .site-nav.is-open {
+    max-height: min(80dvh, 900px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
   .site-nav .nav-list {
     flex-direction: column;
@@ -1627,6 +1631,10 @@ input[type="button"] {
   overflow: hidden;
 }
 
+.faq-item[open] > .faq-answer {
+  overflow: visible;
+}
+
 .faq-answer > p:last-child {
   margin-bottom: 1.05rem;
 }
@@ -2013,7 +2021,7 @@ html.has-motion .price-card:hover {
   position: fixed;
   right: 1.25rem;
   bottom: 1.25rem;
-  z-index: 75;
+  z-index: 60;
   width: 3rem;
   height: 3rem;
   display: grid;
@@ -2043,8 +2051,9 @@ html.has-motion .price-card:hover {
   position: fixed;
   right: 1.25rem;
   bottom: 5.15rem;
-  z-index: 61;
+  z-index: 76;
   width: auto;
+  max-width: calc(100vw - 1.5rem);
 }
 
 .chatbot-toggle {
@@ -2074,6 +2083,9 @@ html.has-motion .price-card:hover {
   right: 0;
   bottom: calc(100% + 0.7rem);
   width: min(360px, calc(100vw - 2rem));
+  max-height: min(520px, calc(100dvh - 7.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+  display: flex;
+  flex-direction: column;
   background: var(--panel-solid);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -2108,6 +2120,7 @@ html.has-motion .price-card:hover {
   padding: 0.85rem 1rem;
   background: #151a2c;
   border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 .chatbot-header-brand {
@@ -2143,10 +2156,14 @@ html.has-motion .price-card:hover {
 }
 
 .chatbot-messages {
-  max-height: 300px;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0.9rem 0.9rem 0.5rem;
   background: #101322;
+  -webkit-overflow-scrolling: touch;
 }
 
 .chatbot-message {
@@ -2180,6 +2197,7 @@ html.has-motion .price-card:hover {
   padding: 0.7rem 0.9rem;
   border-top: 1px solid var(--line);
   background: #111527;
+  flex-shrink: 0;
 }
 
 .chatbot-quick button {
@@ -2205,6 +2223,7 @@ html.has-motion .price-card:hover {
   padding: 0.75rem 0.9rem 0.9rem;
   border-top: 1px solid var(--line);
   background: #111527;
+  flex-shrink: 0;
 }
 
 .chatbot-label {
@@ -2242,10 +2261,17 @@ html.has-motion .price-card:hover {
 }
 
 @media (max-width: 700px) {
+  .to-top {
+    right: 0.7rem;
+    /* Sit above the chat FAB so it never covers the chatbot */
+    bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px) + 3.2rem + 0.65rem);
+  }
+
   .chatbot {
     right: 0.7rem;
-    bottom: calc(0.7rem + env(safe-area-inset-bottom));
+    bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));
     width: auto;
+    max-width: calc(100vw - 1.4rem);
   }
 
   .chatbot-toggle {
@@ -2268,15 +2294,23 @@ html.has-motion .price-card:hover {
     left: 0.7rem;
     right: 0.7rem;
     bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px) + 3.65rem);
+    top: auto;
     width: auto;
-    max-height: min(66dvh, 520px);
+    max-width: none;
+    max-height: calc(
+      100dvh
+      - env(safe-area-inset-top, 0px)
+      - env(safe-area-inset-bottom, 0px)
+      - 5.2rem
+    );
     display: flex;
     flex-direction: column;
     border-radius: 14px;
+    box-sizing: border-box;
   }
 
   .chatbot-messages {
-    flex: 1;
+    flex: 1 1 auto;
     max-height: none;
     min-height: 0;
   }
@@ -2286,9 +2320,9 @@ html.has-motion .price-card:hover {
   }
 
   body.chat-open .to-top {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 }
 
