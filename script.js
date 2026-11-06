@@ -32,8 +32,16 @@
     );
   }
 
+  function isCoarsePointer() {
+    return (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(hover: none), (pointer: coarse)").matches
+    );
+  }
+
   function initLenis() {
-    if (prefersReducedMotion() || typeof window.Lenis !== "function") {
+    // Skip Lenis on touch/Android — it often causes black bars and broken scaling.
+    if (prefersReducedMotion() || isCoarsePointer() || typeof window.Lenis !== "function") {
       return null;
     }
 

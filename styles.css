@@ -30,7 +30,13 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; background: #05060a; }
+html {
+  scroll-behavior: smooth;
+  background: #07070d;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+}
 
 html.lenis,
 html.lenis body {
@@ -47,7 +53,11 @@ html.lenis body {
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
   font-family: var(--font-body);
   color: var(--text);
   line-height: 1.6;
@@ -56,6 +66,15 @@ body {
     radial-gradient(circle at 82% 14%, rgba(187, 155, 255, 0.16), transparent 44%),
     radial-gradient(circle at 58% 78%, rgba(138, 243, 255, 0.08), transparent 38%),
     linear-gradient(180deg, #080910 0%, #07070d 55%, #05060a 100%);
+  background-color: #07070d;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
 }
 
 ::selection { background: rgba(138, 243, 255, 0.35); color: #04060a; }
@@ -160,6 +179,7 @@ input[type="button"] {
   backdrop-filter: blur(16px);
   border-bottom: 1px solid transparent;
   transform: translateY(0);
+  padding-top: env(safe-area-inset-top, 0px);
   transition:
     transform 0.3s var(--ease-out),
     background-color 0.25s var(--ease-out),
@@ -323,6 +343,7 @@ input[type="button"] {
   position: relative;
   padding: clamp(3rem, 10vw, 7rem) 0 clamp(4rem, 8vw, 7rem);
   overflow: hidden;
+  max-width: 100%;
   --mx: 0;
   --my: 0;
   --scroll-y: 0px;
@@ -352,6 +373,30 @@ input[type="button"] {
   left: -120px;
   bottom: 40px;
   transform: translate3d(calc(var(--mx) * -16px), calc(var(--my) * -18px - var(--scroll-y) * 0.2), 0);
+}
+
+@media (max-width: 760px) {
+  .hero-orb-a,
+  .hero-orb-b {
+    width: min(280px, 70vw);
+    height: min(280px, 70vw);
+    filter: blur(56px);
+    transform: none;
+  }
+
+  .hero-orb-a {
+    top: -90px;
+    right: -60px;
+  }
+
+  .hero-orb-b {
+    left: -80px;
+    bottom: 10px;
+  }
+
+  .hero-panel {
+    transform: none;
+  }
 }
 
 .hero-grid-lines {
@@ -2104,9 +2149,9 @@ html.has-motion .price-card:hover {
     position: fixed;
     left: 0.7rem;
     right: 0.7rem;
-    bottom: calc(0.7rem + env(safe-area-inset-bottom) + 3.65rem);
+    bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px) + 3.65rem);
     width: auto;
-    max-height: min(66vh, 520px);
+    max-height: min(66dvh, 520px);
     display: flex;
     flex-direction: column;
     border-radius: 14px;
