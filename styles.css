@@ -1921,7 +1921,92 @@ html.has-motion .price-card:hover {
   margin: 0;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
+}
+
+.cookie-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 90;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.1rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(138, 243, 255, 0.28);
+  background:
+    radial-gradient(ellipse 80% 80% at 0% 0%, rgba(138, 243, 255, 0.1), transparent 55%),
+    rgba(10, 12, 20, 0.96);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
+}
+
+.cookie-banner[hidden] {
+  display: none !important;
+}
+
+.cookie-banner-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.25rem;
+}
+
+.cookie-banner-copy {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.cookie-banner-copy p {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.cookie-banner-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.cookie-banner-copy strong {
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.cookie-banner-copy a {
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.cookie-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.cookie-banner-actions .btn {
+  font-size: 0.88rem;
+  padding: 0.55rem 0.9rem;
+}
+
+@media (max-width: 700px) {
+  .cookie-banner {
+    left: 0.7rem;
+    right: 0.7rem;
+    bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px) + 4.2rem);
+  }
+
+  .cookie-banner-actions {
+    width: 100%;
+  }
+
+  .cookie-banner-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
 }
 
 .to-top {

@@ -17,10 +17,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script>document.documentElement.classList.add("js-reveal");</script>
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Hyppää sisältöön</a>
@@ -120,10 +116,22 @@
 
           <h2>6. Evästeet ja seuranta</h2>
           <p>
-            Sivusto käyttää palvelun toiminnan kannalta tarpeellisia tekniikoita sekä kevyttä analytiikkaa
-            (esim. Vercel Insights). Markkinointipikseleitä ei ole oletuksena käytössä. Selain voi
-            tallentaa kampanjatunnisteen (esim. ref/UTM) paikallisesti, jotta voimme yhdistää
-            yhteydenoton oikeaan lähteeseen.
+            Käytämme evästeitä ja vastaavia tekniikoita (localStorage). Voit hyväksyä tai hylätä
+            analytiikkaevästeet bannerissa. Voit muuttaa valintaa milloin tahansa footerin
+            “Evästeasetukset”-linkistä.
+          </p>
+          <ul>
+            <li>
+              <strong>Välttämättömät:</strong> evästevalinta, lomakkeiden toiminta, kampanjatunniste
+              (ref/UTM) yhteydenoton kohdistamiseen — enintään 60 päivää.
+            </li>
+            <li>
+              <strong>Analytiikka (suostumus):</strong> Vercel Analytics ja Speed Insights —
+              anonyymiä/pseudonymisoitua kävijä- ja suorituskykydataa sivuston kehittämiseen.
+            </li>
+          </ul>
+          <p>
+            Emme käytä oletuksena mainonnan seurantapikseleitä (esim. Meta/Google Ads).
           </p>
 
           <h2>7. Oikeutesi</h2>
@@ -161,6 +169,7 @@
       <ul class="footer-legal">
         <li><a href="tietosuoja" aria-current="page">Tietosuoja</a></li>
         <li><a href="kayttoehdot">Käyttöehdot</a></li>
+        <li><a href="#" data-cookie-settings>Evästeasetukset</a></li>
       </ul>
     </div>
   </footer>
