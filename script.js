@@ -465,6 +465,8 @@
 
     var dict = content[lang];
     var isOpen = false;
+    var closeTimer = 0;
+    var focusTimer = 0;
 
     function normalize(text) {
       return String(text || "")
@@ -481,7 +483,9 @@
       item.className = "chatbot-message " + role;
       item.textContent = text;
       messages.appendChild(item);
-      messages.scrollTop = messages.scrollHeight;
+      window.requestAnimationFrame(function () {
+        messages.scrollTop = messages.scrollHeight;
+      });
     }
 
     function getAnswer(question) {
@@ -512,15 +516,36 @@
         return;
       }
       isOpen = true;
+      if (closeTimer) {
+        window.clearTimeout(closeTimer);
+        closeTimer = 0;
+      }
+      if (focusTimer) {
+        window.clearTimeout(focusTimer);
+        focusTimer = 0;
+      }
       if (smoothScroll) {
         smoothScroll.stop();
       }
-      root.classList.add("is-open");
-      document.body.classList.add("chat-open");
       panel.hidden = false;
       backdrop.hidden = false;
+      // Next frame so CSS can animate from the closed state
+      window.requestAnimationFrame(function () {
+        root.classList.add("is-open");
+        backdrop.classList.add("is-visible");
+        document.body.classList.add("chat-open");
+      });
       toggleBtn.setAttribute("aria-expanded", "true");
-      input.focus();
+      // Delay focus on coarse pointers so mobile keyboard doesn't fight the open animation
+      focusTimer = window.setTimeout(
+        function () {
+          focusTimer = 0;
+          if (isOpen) {
+            input.focus({ preventScroll: true });
+          }
+        },
+        isCoarsePointer() ? 240 : 40
+      );
     }
 
     function closeChat() {
@@ -528,15 +553,28 @@
         return;
       }
       isOpen = false;
+      if (focusTimer) {
+        window.clearTimeout(focusTimer);
+        focusTimer = 0;
+      }
       if (smoothScroll) {
         smoothScroll.start();
       }
       root.classList.remove("is-open");
+      backdrop.classList.remove("is-visible");
       document.body.classList.remove("chat-open");
-      panel.hidden = true;
-      backdrop.hidden = true;
       toggleBtn.setAttribute("aria-expanded", "false");
-      toggleBtn.focus();
+      if (document.activeElement === input) {
+        input.blur();
+      }
+      closeTimer = window.setTimeout(function () {
+        closeTimer = 0;
+        if (!isOpen) {
+          panel.hidden = true;
+          backdrop.hidden = true;
+        }
+      }, 220);
+      toggleBtn.focus({ preventScroll: true });
     }
 
     toggleBtn.addEventListener("click", function () {

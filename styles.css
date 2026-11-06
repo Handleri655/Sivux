@@ -2075,11 +2075,13 @@ html.has-motion .price-card:hover {
 }
 
 .chatbot-panel {
+  --chat-panel-h: min(480px, calc(100dvh - 7.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
   position: absolute;
   right: 0;
   bottom: calc(100% + 0.7rem);
   width: min(360px, calc(100vw - 2rem));
-  max-height: min(520px, calc(100dvh - 7.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+  height: var(--chat-panel-h);
+  max-height: var(--chat-panel-h);
   display: flex;
   flex-direction: column;
   background: var(--panel-solid);
@@ -2087,20 +2089,41 @@ html.has-motion .price-card:hover {
   border-radius: 16px;
   box-shadow: 0 24px 52px rgba(0, 0, 0, 0.55);
   overflow: hidden;
+  contain: layout paint;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0) scale(0.98);
+  transform-origin: bottom right;
+  transition:
+    opacity 0.22s var(--ease-out),
+    transform 0.22s var(--ease-out);
+  pointer-events: none;
+}
+
+.chatbot.is-open .chatbot-panel {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  pointer-events: auto;
 }
 
 .chatbot-panel[hidden] {
   display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
 }
 
 .chatbot-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.42);
   z-index: 59;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s var(--ease-out), visibility 0.2s var(--ease-out);
+  pointer-events: none;
+}
+
+.chatbot-backdrop.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .chatbot-backdrop[hidden] {
@@ -2153,13 +2176,14 @@ html.has-motion .price-card:hover {
 
 .chatbot-messages {
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 160px;
   max-height: none;
   overflow: auto;
   overscroll-behavior: contain;
   padding: 0.9rem 0.9rem 0.5rem;
   background: #101322;
   -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
 }
 
 .chatbot-message {
@@ -2286,6 +2310,15 @@ html.has-motion .price-card:hover {
   }
 
   .chatbot-panel {
+    --chat-panel-h: min(
+      62dvh,
+      calc(
+        100dvh
+        - env(safe-area-inset-top, 0px)
+        - env(safe-area-inset-bottom, 0px)
+        - 5.2rem
+      )
+    );
     position: fixed;
     left: 0.7rem;
     right: 0.7rem;
@@ -2293,26 +2326,24 @@ html.has-motion .price-card:hover {
     top: auto;
     width: auto;
     max-width: none;
-    max-height: calc(
-      100dvh
-      - env(safe-area-inset-top, 0px)
-      - env(safe-area-inset-bottom, 0px)
-      - 5.2rem
-    );
+    height: var(--chat-panel-h);
+    max-height: var(--chat-panel-h);
     display: flex;
     flex-direction: column;
     border-radius: 14px;
     box-sizing: border-box;
+    transform-origin: bottom center;
   }
 
   .chatbot-messages {
     flex: 1 1 auto;
     max-height: none;
-    min-height: 0;
+    min-height: 120px;
   }
 
   body.chat-open {
     overflow: hidden;
+    touch-action: none;
   }
 
   body.chat-open .to-top {
